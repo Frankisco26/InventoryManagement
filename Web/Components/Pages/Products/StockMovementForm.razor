@@ -1,0 +1,172 @@
+@page "/products/{productId}/movement"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@namespace InventoryManagement.Web.Components.Pages.Products
+@using InventoryManagement.Data.Dtos
+@using InventoryManagement.Web.Services
+@inject ApiClient ApiClient
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JSRuntime
+@inject ApiClient ApiClient
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-6">
+            <h2>Registrar Movimiento de Stock</h2>
+        </div>
+    </div>
+
+    @if (isLoading)
+    {
+        <div class="alert alert-info">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Cargando información...
+        </div>
+    }
+    else if (errorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> @errorMessage
+            <button type="button" class="btn-close" @onclick="() => errorMessage = null"></button>
+        </div>
+    }
+    else if (product == null)
+    {
+        <div class="alert alert-warning">
+            Producto no encontrado.
+            <a href="/products">Volver a productos</a>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-md-6">
+                <div class="card mb-4">
+                    <div class="card-header">
+                        <h5 class="mb-0">@product.Name</h5>
+                    </div>
+                    <div class="card-body">
+                        <div class="row mb-3">
+                            <div class="col-md-6">
+                                <p>
+                                    <strong>SKU:</strong> <code>@product.SKU</code>
+                                </p>
+                                <p>
+                                    <strong>Categoría:</strong> @product.Category
+                                </p>
+                            </div>
+                            <div class="col-md-6">
+                                <p>
+                                    <span class="badge bg-info">@product.QuantityInStock unidades</span>
+                                </p>
+                                <p>
+                                    <strong>Precio:</strong> $@product.UnitPrice.ToString("F2")
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header bg-secondary text-white">
+                        <h5 class="mb-0">Registrar Nuevo Movimiento</h5>
+                    </div>
+                    <div class="card-body">
+                        <EditForm Model="@movementModel" OnValidSubmit="@HandleSubmit" FormName="MovementForm">
+                            <DataAnnotationsValidator />
+
+                            <div class="mb-3">
+                                <label class="form-label">Tipo de Movimiento</label>
+                                <InputSelect class="form-select" @bind-Value="movementModel.Type">
+                                    <option value="@Models.StockMovementType.Inbound">Entrada (Inbound)</option>
+                                    <option value="@Models.StockMovementType.Outbound">Salida (Outbound)</option>
+                                </InputSelect>
+                                <ValidationMessage For="@(() => movementModel.Type)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Cantidad</label>
+                                <InputNumber class="form-control" @bind-Value="movementModel.Quantity" min="1" />
+                                <ValidationMessage For="@(() => movementModel.Quantity)" class="text-danger" />
+                            </div>
+
+                            <div class="mb-3">
+                                <label class="form-label">Razón/Descripción</label>
+                                <InputTextArea class="form-control" @bind-Value="movementModel.Reason" rows="3" placeholder="Ej: Reabastecimiento, Venta, Devolución..." />
+                                <ValidationMessage For="@(() => movementModel.Reason)" class="text-danger" />
+                            </div>
+
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary" @onclick="CancelClick">
+                                    <span class="oi oi-x"></span> Cancelar
+                                </button>
+                                <button type="submit" class="btn btn-primary" disabled=@isSaving>
+                                    @if (isSaving)
+                                    {
+                                        <span class="spinner-border spinner-border-sm me-2"></span>
+                                    }
+                                    <span class="oi oi-check"></span> Registrar Movimiento
+                                </button>
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-md-6">
+                <div class="card bg-light mb-3">
+                    <div class="card-body">
+                        <h5 class="card-title">Historial de Movimientos</h5>
+                        @if (movements != null && movements.Any())
+                        {
+                            <div class="table-responsive">
+                                <table class="table table-striped table-hover datetable">
+                                    <thead class="">
+                                        <tr>
+                                            <th>Tipo movimiento</th>
+                                            <th>Cantidad</th>
+                                            <th>Fecha</th>
+                                            <th>Motivo</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @foreach (var movement in movements.OrderByDescending(m => m.Timestamp))
+                                        {
+                                            <tr class='@((product.QuantityInStock <= product.MinimumStock) ? " table-danger" : "")'>
+                                                <td>
+                                                    @if (movement.Type == "Inbound")
+                                                    {
+                                                        <span class="badge bg-success pr-1">ENTRADA </span>
+                                                    }
+                                                    else
+                                                    {
+                                                        <span class="badge bg-danger pr-1">SALIDA </span>
+                                                    }
+                                                </td>
+                                                <td>
+                                                    @movement.Quantity
+                                                </td>
+                                                <td>
+                                                    @movement.Timestamp.ToString("dd/MM/yyyy HH:mm")
+                                                </td>
+                                                <td>
+                                                    @movement.Reason
+                                                </td>
+                                            </tr>
+                                        }
+                                    </tbody>
+                                </table>
+                            </div>
+                        }
+                        else
+                        {
+                            <p class="text-muted small">Sin movimientos registrados</p>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
+

@@ -1,0 +1,107 @@
+@page "/products/new"
+@page "/products/{Id}/edit"
+@page "/products/{Id}/view"
+@attribute [Authorize]
+@rendermode InteractiveServer
+@namespace InventoryManagement.Web.Components.Pages.Products
+@using InventoryManagement.Data.Dtos
+@using InventoryManagement.Web.Services
+@inject ApiClient ApiClient
+@inject NavigationManager NavigationManager
+
+<div class="container mt-5">
+    <div class="row mb-4">
+        <div class="col-md-8">
+            @if (!IsViewMode)
+            {
+                <h2>@(IsEditMode ? "Editar Producto" : "Nuevo Producto")</h2>
+            }
+            else
+            {
+                <h2>Visualizar Producto</h2>
+            }
+        </div>
+    </div>
+
+    @if (IsSaving)
+    {
+        <div class="alert alert-info">
+            <span class="spinner-border spinner-border-sm me-2"></span>
+            Cargando...
+        </div>
+    }
+    else if (ErrorMessage != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <strong>Error:</strong> @ErrorMessage
+            <button type="button" class="btn-close" @onclick="() => ErrorMessage = null"></button>
+        </div>
+    }
+    else
+    {
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-body shadow-lg">
+                        <EditForm Model="@FormModel" OnValidSubmit="@HandleSubmit" FormName="ProductForm">
+                            <DataAnnotationsValidator />
+                            <div class="row">
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">Nombre del producto</label><label class="text-danger">*</label>
+                                    <InputText class="form-control" @bind-Value="FormModel.Name" placeholder="Ingresa el nombre" />
+                                    <ValidationMessage For="@(() => FormModel.Name)" class="text-danger" />
+                                </div>
+                                <div class="col-12 mb-3">
+                                    <label class="form-label">SKU (Código único)</label><label class="text-danger">*</label>
+                                    <InputText class="form-control" @bind-Value="FormModel.SKU" placeholder="Ej: PROD-001" disabled="@IsEditMode" />
+                                    <ValidationMessage For="@(() => FormModel.SKU)" class="text-danger" />
+                                    <small class="form-text text-muted">@(IsEditMode ? "No se puede cambiar en edición" : "Debe ser único")</small>
+                                </div>
+                                <div class="col-sm-12 col-lg-6 mb-3">
+                                    <label class="form-label">Categoría</label><label class="text-danger">*</label>
+                                    <InputText class="form-control" @bind-Value="FormModel.Category" placeholder="Ej: Electrónica" />
+                                    <ValidationMessage For="@(() => FormModel.Category)" class="text-danger" />
+                                </div>
+                                <div class="col-sm-12 col-lg-6 mb-3">
+                                    <label class="form-label">Precio unitario</label><label class="text-danger">*</label>
+                                    <InputNumber class="form-control" @bind-Value="FormModel.UnitPrice" />
+                                    <ValidationMessage For="@(() => FormModel.UnitPrice)" class="text-danger" />
+                                </div>
+                                @if (!IsEditMode)
+                                {
+                                    <div class="col-sm-12 col-lg-6 mb-3">
+                                        <label class="form-label">Cantidad inicial</label><label class="text-danger">*</label>
+                                        <InputNumber class="form-control" @bind-Value="FormModel.QuantityInStock" />
+                                        <ValidationMessage For="@(() => FormModel.QuantityInStock)" class="text-danger" />
+                                    </div>
+                                }
+
+                                <div class="col-sm-12 col-lg-6 mb-3">
+                                    <label class="form-label">Cantidad mínima</label><label class="text-danger">*</label>
+                                    <InputNumber class="form-control" @bind-Value="FormModel.MinimumStock" />
+                                    <ValidationMessage For="@(() => FormModel.MinimumStock)" class="text-danger" />
+                                </div>
+                            </div>
+                            <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                                <button type="button" class="btn btn-secondary" @onclick="CancelClick">
+                                    <span class="oi oi-x"></span> Cancelar
+                                </button>
+
+                                @if (!IsViewMode)
+                                {
+                                    <button type="submit" class="btn btn-primary" disabled=@IsSaving>
+                                        @if (IsSaving)
+                                        {
+                                            <span class="spinner-border spinner-border-sm me-2"></span>
+                                        }
+                                        <span class="oi oi-check"></span> @(IsEditMode ? "Actualizar" : "Crear")
+                                    </button>
+                                }
+                            </div>
+                        </EditForm>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+</div>
