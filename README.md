@@ -128,7 +128,7 @@ appsettings.json
 
 ---
 
-# 🔑 Configuración JWT
+# Configuración JWT
 
 ```json
 "Jwt": {
@@ -141,7 +141,7 @@ appsettings.json
 
 ---
 
-# 🧱 Migraciones
+# Migraciones
 
 Abrir:
 
@@ -157,11 +157,11 @@ Update-Database
 
 ---
 
-# 🌱 Seed Inicial
+# Seed Inicial
 
 El sistema genera automáticamente un usuario administrador al iniciar.
 
-## 👤 Usuario Administrador
+## Usuario Administrador
 
 ```text
 Correo:
@@ -173,12 +173,12 @@ Admin123*
 
 ---
 
-# ▶️ Ejecutar Proyecto
+# Ejecutar Proyecto
 
 ## Desde Visual Studio
 
 ```text
-F5
+ Dar click derecho sobre el proyecto Web y escoger la opción establecer como proyecto de inicio. Luego presionar F5
 ```
 
 ---
@@ -191,7 +191,7 @@ dotnet run
 
 ---
 
-# 🌐 URLs del Sistema
+# URLs del Sistema
 
 ## Aplicación Web
 
@@ -241,13 +241,8 @@ Usa:
 
 ```text
 JWT Bearer Authentication
-```
-
 Para proteger endpoints REST.
-
 ```
-
----
 
 # Dependencias Principales
 
@@ -279,7 +274,7 @@ System.IdentityModel.Tokens.Jwt
 ---
 
 
-# 📚 Estructura Técnica
+# Estructura Técnica
 
 ## Controllers
 
@@ -400,7 +395,7 @@ faguirrea1@gmail.com - 0998095771
 
 ---
 
-# ⭐ Notas
+# Notas
 
 Este proyecto fue desarrollado usando:
 
