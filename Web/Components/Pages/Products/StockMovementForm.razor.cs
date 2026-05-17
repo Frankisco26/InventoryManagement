@@ -84,7 +84,7 @@ namespace InventoryManagement.Web.Components.Pages.Products
                     movementModel = new();
 
                     // Mostrar mensaje de éxito
-                    await JSRuntime.InvokeVoidAsync("alert", "Movimiento registrado exitosamente");
+                    await JSRuntime.InvokeVoidAsync("showSuccess", "Movimiento registrado exitosamente");
                 }
                 else
                 {
