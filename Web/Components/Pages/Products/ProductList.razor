@@ -43,12 +43,11 @@
     else
     {
         <div class="row">
-            <div class="col-md-12">
+            <div class="col-12">
                 <div class="table-responsive">
                     <table class="table table-striped table-hover">
                         <thead class="table-dark">
                             <tr>
-                                <th>ID</th>
                                 <th>Nombre</th>
                                 <th>SKU</th>
                                 <th>Categoría</th>
@@ -61,33 +60,21 @@
                         <tbody>
                             @foreach (var product in products)
                             {
-                                <tr>
-                                    <td>@product.Id</td>
+                                <tr class='@((product.QuantityInStock <= product.MinimumStock) ? " table-danger" : "")'>
                                     <td>
-                                        <strong>@product.Name</strong>
+                                        @product.Name
                                     </td>
                                     <td>
-                                        <code>@product.SKU</code>
+                                        <strong>@product.SKU</strong>
                                     </td>
                                     <td>
-                                        <span class="badge bg-secondary">@product.Category</span>
+                                        @product.Category
                                     </td>
                                     <td>
-                                        @if (product.QuantityInStock < 10)
-                                        {
-                                            <span class="badge bg-danger">@product.QuantityInStock</span>
-                                        }
-                                        else if (product.QuantityInStock < 20)
-                                        {
-                                            <span class="badge bg-warning">@product.QuantityInStock</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="badge bg-success">@product.QuantityInStock</span>
-                                        }
+                                        @product.QuantityInStock
                                     </td>
                                     <td>
-                                        $@product.MinimumStock
+                                        @product.MinimumStock
                                     </td>
                                     <td>
                                         $@product.UnitPrice.ToString("F2")

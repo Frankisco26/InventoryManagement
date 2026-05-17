@@ -51,31 +51,30 @@ namespace InventoryManagement.Web.Components.Pages.Products
 
         private async Task DeleteProduct(int id)
         {
-            if (await ConfirmAsync("¿Estás seguro de que deseas eliminar este producto?"))
+            bool confirmed = await JSRuntime.InvokeAsync<bool>("showQuestion", "Advertencia", "¿Desea eliminar este movimiento?");
+
+            if (!confirmed)
+                return;
+
+            try
             {
-                try
+                var success = await ApiClient.DeleteProductAsync(id);
+                if (success)
                 {
-                    var success = await ApiClient.DeleteProductAsync(id);
-                    if (success)
-                    {
-                        errorMessage = null;
-                        await LoadProducts();
-                    }
-                    else
-                    {
-                        errorMessage = "No se pudo eliminar el producto.";
-                    }
+                    errorMessage = null;
+                    await LoadProducts();
                 }
-                catch (Exception ex)
+                else
                 {
-                    errorMessage = $"Error al eliminar: {ex.Message}";
+                    errorMessage = "No se pudo eliminar el producto.";
                 }
             }
+            catch (Exception ex)
+            {
+                errorMessage = $"Error al eliminar: {ex.Message}";
+            }
+
         }
 
-        private async Task<bool> ConfirmAsync(string message)
-        {
-            return await JSRuntime.InvokeAsync<bool>("confirm", message);
-        }
     }
 }
