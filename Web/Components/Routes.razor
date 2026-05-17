@@ -1,0 +1,33 @@
+﻿@using System.Reflection
+@using Microsoft.AspNetCore.Components.Authorization
+@using Microsoft.AspNetCore.Components.Routing
+@using Microsoft.AspNetCore.Components.Web
+
+<Router AppAssembly="@typeof(Program).Assembly">
+
+    <Found Context="routeData">
+
+        <AuthorizeRouteView RouteData="@routeData"
+                            DefaultLayout="@typeof(Layout.MainLayout)">
+
+            <NotAuthorized>
+                <RedirectToLogin />
+            </NotAuthorized>
+
+        </AuthorizeRouteView>
+
+    </Found>
+
+    <NotFound>
+
+        <PageTitle>No encontrado</PageTitle>
+
+        <LayoutView Layout="@typeof(Layout.MainLayout)">
+            <p role="alert">
+                Lo siento, no hay nada en esta dirección.
+            </p>
+        </LayoutView>
+
+    </NotFound>
+
+</Router>
