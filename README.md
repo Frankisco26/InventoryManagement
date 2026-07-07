@@ -313,7 +313,7 @@ Identity and JWT management.
 
 ---
 
-# FAuthentication Flow
+# Authentication Flow
 
 ```text
 Blazor Login
