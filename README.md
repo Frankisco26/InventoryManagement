@@ -1,10 +1,10 @@
 # Inventory Management System
 
-Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollador senior,desarrollado con tecnologías modernas de Microsoft usando ASP.NET Core 8 y Blazor Server.
+Project developed using a microservices architecture, designed to provide high scalability, availability, and ease of maintenance. The solution is composed of independent services, each responsible for a specific business functionality, allowing deployments and updates to be performed independently without affecting the rest of the system.
 
 ---
 
-# Tecnologías Utilizadas
+# Technologies Used
 
 - ASP.NET Core 8
 - Blazor Server
@@ -20,9 +20,9 @@ Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollado
 
 ---
 
-# Arquitectura del Proyecto
+# Project Architecture
 
-El sistema está dividido en múltiples capas para mantener una arquitectura limpia, escalable y mantenible.
+The system is divided into multiple layers to maintain a clean, scalable, and maintainable architecture.
 
 InventoryManagement
 │
@@ -43,367 +43,65 @@ InventoryManagement
 │
 └── Models
 
+# System Features
 
-# Características del Sistema
+## Authentication and Security
 
-## Autenticación y Seguridad
-
-- Login con ASP.NET Identity
-- Registro de usuarios
-- Roles y permisos
+- Login with ASP.NET Identity
+- User Registration
+- Roles and Permissions
 - JWT Bearer Authentication
 - Cookies Authentication
-- Protección de APIs
+- API Protection
 - Claims Authentication
-- Password hashing
+- Password Hashing
 - Authorization Policies
 
 ---
 
-## Gestión de Productos
+## Product Management
 
-- Crear productos
-- Editar productos
-- Eliminar productos
-- Consultar productos
-- Control de stock
-- Categorías
-- Descripciones
-- Precios
-- Inventario mínimo
-
----
-
-## Movimientos de Inventario
-
-- Entradas de inventario
-- Salidas de inventario
-- Historial de movimientos
-- Control de usuarios por movimiento
-- Fecha de movimiento
-- Tipo de movimiento
-- Cantidades
+- Create Products
+- Edit Products
+- Delete Products
+- View Products
+- Stock Control
+- Categories
+- Descriptions
+- Prices
+- Minimum Inventory
 
 ---
 
-## APIs REST
+## Inventory Movements
 
-- CRUD Productos
-- CRUD Movimientos
-- APIs protegidas con JWT
-- Responses tipadas
+- Inventory Entries
+- Inventory Outputs
+- Movement History
+- User Tracking per Movement
+- Movement Date
+- Movement Type
+- Quantities
+
+---
+
+## REST APIs
+
+- Product CRUD
+- Movement CRUD
+- JWT-Protected APIs
+- Typed Responses
 - DTOs
-- Validaciones
-- Control de errores
+- Validations
+- Error Handling
 
 ---
 
-# Configuración del Proyecto
+# Project Configuration
 
 ---
 
-# Clonar Repositorio
+# Clone Repository
 
 ```bash
 git clone https://github.com/Frankisco26/InventoryManagement.git
-```
-
----
-
-# Configuración Base de Datos
-
-Modificar el archivo:
-
-```
-appsettings.json
-```
-
-# Connection String
-
-```json
-"ConnectionStrings": {
-  "DefaultConnection": "Data Source=localhost;Initial Catalog=InventoryManagement;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
-}
-```
-
----
-
-# Configuración JWT
-
-```json
-"Jwt": {
-  "Key": "qwertrtyuikjghgfdsazxcvgsdf4555465gfdsgt786876786fsfsdg786dg78g6rew23r34f3t54gtrvbt5",
-  "Issuer": "InventoryApi",
-  "Audience": "InventoryClient",
-  "DurationInMinutes": 60
-}
-```
-
----
-
-# Migraciones
-
-Abrir:
-
-```text
-Package Manager Console
-```
-
-Ejecutar:
-
-```powershell
-Update-Database
-```
-
----
-
-# Seed Inicial
-
-El sistema genera automáticamente un usuario administrador al iniciar.
-
-## Usuario Administrador
-
-```text
-Correo:
-admin@inventory.com
-
-Contraseña:
-Admin123*
-```
-
----
-
-# Ejecutar Proyecto
-
-## Desde Visual Studio
-
-```text
- Dar click derecho sobre el proyecto Web y escoger la opción establecer como proyecto de inicio. Luego presionar F5
-```
-
----
-
-## Desde CLI
-
-```bash
-dotnet run
-```
-
----
-
-# URLs del Sistema
-
-## Aplicación Web
-
-```text
-https://localhost:7001
-```
-
----
-
-## APIs REST
-
-### Productos
-
-```text
-https://localhost:7001/api/products
-```
-
-### Movimientos
-
-```text
-https://localhost:7001/api/stockmovements
-```
-
----
-
-# Arquitectura de Seguridad
-
-El sistema usa dos tipos de autenticación.
-
----
-
-# Blazor UI
-
-Usa:
-
-```text
-ASP.NET Identity Cookies
-```
-
-Para manejar sesiones autenticadas en la interfaz.
-
----
-
-# APIs
-
-Usa:
-
-```text
-JWT Bearer Authentication
-Para proteger endpoints REST.
-```
-
-# Dependencias Principales
-
-```xml
-Microsoft.AspNetCore.Identity.EntityFrameworkCore
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.AspNetCore.Authentication.JwtBearer
-System.IdentityModel.Tokens.Jwt
-```
-
----
-
-# Buenas Prácticas Implementadas
-
-- Arquitectura por capas
-- Dependency Injection
-- DTO Pattern
-- Service Pattern
-- JWT Authentication
-- Entity Framework Core
-- Async/Await
-- Repository Pattern
-- Claims Authentication
-- Authorization
-- Validaciones
-- Separation of Concerns
-- SOLID Principles
-
----
-
-
-# Estructura Técnica
-
-## Controllers
-
-Responsables de exponer APIs REST.
-
----
-
-## Services
-
-Contienen lógica de negocio.
-
----
-
-## DTOs
-
-Objetos de transferencia de datos.
-
----
-
-## Models
-
-Entidades del sistema.
-
----
-
-## DbContext
-
-Manejo de Entity Framework Core.
-
----
-
-## Authentication
-
-Manejo de Identity y JWT.
-
----
-
-# Flujo de Autenticación
-
-```text
-Blazor Login
-↓
-ASP.NET Identity
-↓
-Cookie Authentication
-↓
-JWT Generation
-↓
-Bearer Token
-↓
-Protected APIs
-↓
-SQL Server
-```
-
----
-
-# Herramientas Utilizadas
-
-- Visual Studio 2022
-- SQL Server
-- Git
-- GitHub
-- Fork
-- Insomnia
-
----
-
-# Archivos Importantes
-
-## Program.cs
-
-Configuración principal del sistema.
-
----
-
-## appsettings.json
-
-Configuraciones generales.
-
----
-
-## JwtService.cs
-
-Generación de JWT Tokens.
-
----
-
-## AuthService.cs
-
-Manejo de autenticación del frontend.
-
----
-
-## DbSeeder.cs
-
-Carga inicial de usuarios y roles.
-
----
-
-# Licencia
-
-Proyecto de uso educativo y demostrativo.
-
----
-
-# Autor
-
-Francisco Aguirre
-
----
-
-# Contacto
-
-```text
-faguirrea1@gmail.com - 0998095771
-```
-
----
-
-# Notas
-
-Este proyecto fue desarrollado usando:
-
-- ASP.NET Core 8
-- Blazor Server
-- Clean Architecture
-- JWT Authentication
-- Identity Framework
-- SQL Server
-
-siguiendo buenas prácticas modernas de desarrollo empresarial.
