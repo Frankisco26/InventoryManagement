@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Bienvenido";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+}
+
+@if (string.IsNullOrEmpty(ViewBag.IdentificacionEmpresa as string))
+{
+    <partial name="_ModalSelectorEmpresa" />
+}

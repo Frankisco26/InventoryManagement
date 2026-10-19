@@ -1,0 +1,43 @@
+@page
+@model AccessDeniedModel
+@{
+    ViewData["Title"] = "No tienes acceso a esta función";
+}
+
+@section Styles {
+    <style>
+        .login {
+            padding: 1rem;
+        }
+
+        .demo {
+            position: absolute;
+            width: 57rem;
+            max-width: 95%;
+            margin: 5px
+        }
+    </style>
+}
+
+<section id="welcome" class="pricing py-5">
+    <div class="container w-100">
+        <div class="row">
+            <div class="col demo">
+                <div id="main-hero" class="login shadow animated fadeInLeftBig">
+                    <div class="row">
+                        <div class="col-12 colorLetras">
+                            <h1 class="lead text-left">@ViewData["Title"]</h1>
+                            <p>
+                                No tienes permiso para esta funcionalidad.
+                            </p>
+                            <p>
+                                <a class="btn btn-primary" href="~/" role="button">Volver al inicio</a>
+                                <a class="btn btn-outline-secondary" asp-page="./Logout" role="button">Salir</a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

@@ -1,0 +1,363 @@
+@{
+    ViewData["Title"] = "Permisos";
+}
+
+@section Styles {
+    <style>
+        .modal-lg {
+            max-width: 80%;
+        }
+
+        .control-label {
+            font-size: 0.75em !important;
+        }
+
+        .form-control-sm {
+            height: 2rem !important;
+        }
+
+        .label-item {
+            font-size: 0.85rem;
+            font-weight: bold;
+        }
+    </style>
+}
+
+<section>
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="actions">
+                <div class="btn-group btn-group-devided">
+                    <a id="btnCrear" name="btnCrear" onclick="Crear();" class="botonAnimado btn btn-sm btn-success text-white">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <img width='25' src='/images/menu/nuevo.png' />
+                            </div>
+                        </div>
+                        <span>Nuevo</span>
+                    </a>
+                    <a class="botonAnimado btn btn-sm btn-success text-white tool-action" data-action="0" id="exportExcel" href="#">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <img width='25' src='/images/menu/excel.png' />
+                            </div>
+                        </div>
+                        <span>Excel</span>
+                    </a>
+                </div>
+            </div>
+            <div class="actions btn-group">
+                <b><i class="fas fa-user-shield mr-2"></i>@($"{ViewData["Title"]}")</b>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="tableFixHead">
+                <table id="roles" class="table table-striped table-bordered display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Nombre</th>
+                            <th>Empresa</th>
+                            <th>Crear</th>
+                            <th>Editar</th>
+                            <th>Anular</th>
+                            <th data-orderable="false" data-priority="1" class="no-export"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <form id="formularioModal" method="post" asp-action="CrearRol" asp-controller="Rol">
+        <input type="hidden" name="Id" id="Id" value="0" />
+        <div id="modalRol" class="modal fade bd-example-modal-lg" tabindex="-1" role="dialog" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content" id="modalContent">
+                    <div class="modal-header modal-header-lg shape-lg">
+                        <img class="logoHeader-lg" src="~/images/LetraContagestor.png" />
+                        <h5 class="modal-title" style="position:absolute; right:2rem;"><img class="logoHeader-lg" width="40" src="~/images/modals/usuario.png" /> Permisos</h5>
+                        <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <div id="modalContainer" class="container">
+                            <div class="row">
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Nombre</label>
+                                    <label class="text-danger" style="font-size:0.875rem">*</label>
+                                    <input id="Nombre" name="Nombre" class="form-control form-control-sm" required />
+                                </div>
+                                <div class="form-group col-md-6">
+                                    <label class="control-label">Empresa</label>
+                                    <label class="text-danger" style="font-size:0.875rem">*</label>
+                                    <select class="form-control form-control-sm" id="IdentificacionEmpresa" name="IdentificacionEmpresa" asp-items="@(new SelectList(ViewBag.Empresas, "Identificacion", "Nombre"))" required>
+                                        <option value="" selected>Seleccionar...</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="row">
+                                <div class="col-sm-12 col-lg-4">
+                                    <div class="checkbox icheck-primary"><input type="checkbox" id="checkTodo" /><label class="control-label" for="checkTodo">Seleccionar todo</label></div>
+                                </div>
+                                <div class="col-sm-12 col-lg-2">
+                                    <div class="checkbox icheck-primary"><input type="checkbox" id="permitirCrear" name="PermiteCrear" value="true" /><label class="control-label" for="permitirCrear">Permitir crear</label></div>
+                                </div>
+                                <div class="col-sm-12 col-lg-2">
+                                    <div class="checkbox icheck-primary"><input type="checkbox" id="permitirEditar" name="PermiteEditar" value="true" /><label class="control-label" for="permitirEditar">Permitir editar</label></div>
+                                </div>
+                                <div class="col-sm-12 col-lg-2">
+                                    <div class="checkbox icheck-primary"><input type="checkbox" id="permitirAnular" name="PermiteAnular" value="true" /><label class="control-label" for="permitirAnular">Permitir eliminar</label></div>
+                                </div>
+                            </div>
+                            <hr style='margin:0.5rem !important' />
+                            <div class="row pt-1">
+                                <div class="col">
+                                    <i class="fas fa-desktop mr-2"></i>
+                                    <span style="font-size:0.875rem">Asignación de pantallas</span>
+                                    <label class="text-danger">*</label>
+                                </div>
+                            </div>
+                            <div id="ContenedorPantallas" class="row"></div>
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                        <a class="btn btn-sm btn-danger" data-dismiss="modal" href="#"><img width='25' class="mr-2" src='/images/menu/cancelar.png' />Cancelar</a>
+                        <button type="submit" class="btn btn-sm btn-success"><img width='25' class="mr-2" src='/images/menu/salvar.png' />Almacenar</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <script>
+        let tableMain = null;
+        let nombreDescarga = "Roles";
+
+        function iconoSiNo(valor) {
+            return valor ? '<span class="badge badge-success">Sí</span>' : '<span class="badge badge-secondary">No</span>';
+        }
+
+        function token() {
+            return $("#formularioModal input[name=__RequestVerificationToken]").val();
+        }
+
+        let config = {
+            id: "roles",
+            ajax: {
+                url: '@Url.Action("Listado", "Rol")',
+                method: 'POST',
+                dataType: "json",
+                contentType: "application/json",
+                data: function (d) {
+                    return JSON.stringify(d);
+                },
+                dataSrc: function (e) {
+                    return e;
+                },
+            },
+            dom: "ftipr",
+            buttons: [
+                { extend: "excel", footer: false, filename: function () { return nombreDescarga; }, exportOptions: { columns: ':not(.no-export)' } }
+            ],
+            columns: [
+                { width: '30%', data: "nombre" },
+                { width: '35%', data: "nombreEmpresa" },
+                { width: '8%', filter: 'none', className: "text-center", data: "permiteCrear", render: iconoSiNo },
+                { width: '8%', filter: 'none', className: "text-center", data: "permiteEditar", render: iconoSiNo },
+                { width: '8%', filter: 'none', className: "text-center", data: "permiteAnular", render: iconoSiNo },
+                {
+                    width: '5%', filter: 'none', type: 'none', data: null, orderable: false, className: "text-center", render: function (data, type, row, meta) {
+                        var defaultMainActions =
+                            "<span data-toggle='dropdown'>" +
+                            "<a class='btn btn-sm btn-sm-td btn-block btn-primary dropdown-toggle' style='color: white !important;' aria-haspopup='true' aria-expanded='false' >" +
+                            "<img width='20' src='/images/menu/menu.png' />" +
+                            "</a>" +
+                            "</span><div class='dropdown-menu'>";
+
+                        defaultMainActions += '<a class="dropdown-item" href="javascript:;" onclick="Editar(' + row["id"] + ')">Editar</a>';
+                        if (row["id"] >= 2)
+                            defaultMainActions += '<a class="dropdown-item text-danger" href="javascript:;" onclick="Eliminar(' + row["id"] + ')">Eliminar</a>';
+                        defaultMainActions += '</div>';
+                        return defaultMainActions;
+                    }
+                }
+            ],
+            serverSide: false,
+            processing: false,
+            columnFilter: true,
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function (e) {
+                $('#roles').wrap("<div class='scrolledTable'></div>");
+            },
+            pageLength: 25
+        };
+
+        $(document).ready(function () {
+            tableMain = configDatatable(config);
+
+            $("#formularioModal").submit(function (e) {
+                e.preventDefault();
+                swal({
+                    title: "¿Está seguro de guardar el rol?",
+                    text: "El rol solo tendrá acceso a las pantallas seleccionadas",
+                    icon: "/images/menu/question.png",
+                    buttons: {
+                        cancel: "Cancelar",
+                        confirm: {
+                            text: "Confirmar"
+                        }
+                    }
+                }).then((isConfirm) => {
+                    if (isConfirm === true) {
+                        var url = $("#Id").val() === "0"
+                            ? '@Url.Action("CrearRol", "Rol")'
+                            : '@Url.Action("Editar", "Rol")?id=' + $("#Id").val();
+
+                        $.ajax({
+                            url: url,
+                            data: $("#formularioModal").serialize(),
+                            dataType: 'json',
+                            type: 'POST',
+                            beforeSend: function (data) {
+                                showLoader();
+                            },
+                            success: function (data) {
+                                hideLoader();
+                                if (data.op) {
+                                    swal("¡Bien!", data.mensaje, "/images/menu/success.png").then((value) => {
+                                        $("#modalRol").modal('hide');
+                                        tableMain.ajax.reload();
+                                    });
+                                } else {
+                                    swal("¡Advertencia!", data.mensaje, "/images/menu/error.png");
+                                }
+                            },
+                            error: function () {
+                                hideLoader();
+                            }
+                        });
+                    }
+                });
+            });
+
+            $('#checkTodo').change(function () {
+                $('input.checksito').prop('checked', this.checked);
+            });
+
+            $('body').on('change', 'input.checkarea', function () {
+                var clase = $(this).val();
+                $(`.${clase}`).prop('checked', this.checked);
+            });
+
+            $("#IdentificacionEmpresa").on("change", function () {
+                var empresaId = $(this).val();
+                if (!empresaId) {
+                    $('#ContenedorPantallas').empty();
+                    return;
+                }
+                var id = $("#Id").val();
+                $.post("@Url.Action("ObtenerRol", "Rol")", { id: id, empresaId: empresaId }).done(function (data) {
+                    cargarPantallas(data);
+                });
+            });
+
+            hideLoader();
+        });
+
+        function cargarPermisos(data) {
+            $("#Nombre").val(data.nombre);
+            $('#permitirCrear').prop('checked', data.permiteCrear == true);
+            $('#permitirEditar').prop('checked', data.permiteEditar == true);
+            $('#permitirAnular').prop('checked', data.permiteAnular == true);
+        }
+
+        function cargarPantallas(data) {
+            var contenedor = $('#ContenedorPantallas');
+            contenedor.empty();
+            var a = 0;
+            $.each(data.pantallas, function (i, grupo) {
+                var modulo = grupo.modulo;
+                var html_checkbox = `<div class='col-md-12 label-item'>
+                                        <hr style='margin:0.5rem !important'/>
+                                        <div class='checkbox icheck-primary'>
+                                            <input class='checkarea' type='checkbox' id='${modulo}' value='${modulo}' />
+                                            <label class='control-label font-weight-bold' style="font-size: 0.875rem !important;" for='${modulo}'>${grupo.nombreModulo}</label>
+                                        </div>
+                                     </div>`;
+
+                $.each(grupo.pantallas, function (j, item2) {
+                    var pantalla_id = "pantalla_" + a;
+                    html_checkbox += `<div class='col-md-3'>
+                                        <div class='checkbox icheck-primary'>
+                                            <input class='checksito ${modulo}' type='checkbox' id='${pantalla_id}' name='Pantallas[${a}]_${item2.area}' ${(item2.activa ? `checked` : ``)} value='${item2.nombre}' />
+                                            <label class='control-label' for='${pantalla_id}'>${item2.nombre}</label>
+                                        </div>
+                                      </div>`;
+                    a++;
+                });
+                contenedor.append(html_checkbox);
+            });
+        }
+
+        function Crear() {
+            $("#Id").val(0);
+            $("#Nombre").val('');
+            $("#IdentificacionEmpresa").val('');
+            $("#checkTodo").prop('checked', false);
+            $('#ContenedorPantallas').empty();
+            $('#permitirCrear').prop('checked', true);
+            $('#permitirEditar').prop('checked', true);
+            $('#permitirAnular').prop('checked', true);
+            $('#modalRol').modal();
+        }
+
+        function Editar(id) {
+            $("#Id").val(id);
+            $("#checkTodo").prop('checked', false);
+            $.post("@Url.Action("ObtenerRol", "Rol")", { id: id }).done(function (data) {
+                cargarPermisos(data);
+                $("#IdentificacionEmpresa").val(data.rucEmpresa);
+                cargarPantallas(data);
+                $('#modalRol').modal();
+            });
+        }
+
+        function Eliminar(id) {
+            swal({
+                title: "¿Estas seguro de eliminar este rol?",
+                text: "Esta acción no se puede deshacer",
+                icon: "/images/menu/question.png",
+                closeOnClickOutside: true,
+                buttons: {
+                    cancel: "Cancelar",
+                    confirm: "Continuar"
+                },
+            }).then((action) => {
+                if (action === true) {
+                    $.ajax({
+                        url: '@Url.Action("Eliminar", "Rol")',
+                        data: { id: id },
+                        headers: { 'RequestVerificationToken': token() },
+                        type: 'POST',
+                        success: function (data) {
+                            if (data != "correcto") {
+                                swal("¡Advertencia!", data, "/images/menu/error.png");
+                            }
+                            else {
+                                swal("¡Hecho!", "Rol eliminado", "/images/menu/success.png");
+                                tableMain.ajax.reload();
+                            }
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

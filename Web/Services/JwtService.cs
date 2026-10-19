@@ -1,26 +1,30 @@
 ﻿using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using InventoryManagement.Data;
-using Microsoft.AspNetCore.Identity;
+using InventoryManagement.Models.Identidad;
+using InventoryManagement.Web.Models.Session;
 using Microsoft.IdentityModel.Tokens;
 
 namespace InventoryManagement.Web.Services;
 
 public class JwtService
 {
-    private readonly IConfiguration _configuration;
-    private readonly UserManager<ApplicationUser> _userManager;
+    /// <summary>
+    /// Claim con el Id de la empresa sobre la que trabaja el token
+    /// </summary>
+    public const string EmpresaIdClaim = "empresa_id";
 
-    public JwtService(
-        IConfiguration configuration,
-        UserManager<ApplicationUser> userManager)
+    private readonly IConfiguration _configuration;
+
+    public JwtService(IConfiguration configuration)
     {
         _configuration = configuration;
-        _userManager = userManager;
     }
 
-    public async Task<string> GenerateToken(ApplicationUser user)
+    /// <summary>
+    /// Genera un token para la API limitado a una empresa del usuario.
+    /// </summary>
+    public string GenerateToken(Usuario user, EmpresaViewModel empresa)
     {
         var jwtSettings = _configuration.GetSection("Jwt");
 
@@ -31,20 +35,15 @@ public class JwtService
             key,
             SecurityAlgorithms.HmacSha256);
 
-        var roles = await _userManager.GetRolesAsync(user);
-
-
         var claims = new List<Claim>
         {
-            new Claim(ClaimTypes.NameIdentifier, user.Id),
-            new Claim(JwtRegisteredClaimNames.Sub, user.Id),
-            new Claim(JwtRegisteredClaimNames.Email, user.Email!),
-            new Claim(ClaimTypes.Name, user.UserName!)
+            new Claim(ClaimTypes.NameIdentifier, user.Id.ToString()),
+            new Claim(JwtRegisteredClaimNames.Sub, user.Id.ToString()),
+            new Claim(ClaimTypes.Name, user.UserName!),
+            new Claim(ClaimTypes.GivenName, user.Name),
+            new Claim(CustomClaimTypes.RucEmpresa, empresa.Identificacion),
+            new Claim(EmpresaIdClaim, empresa.Id.ToString())
         };
-
-        claims.AddRange(
-            roles.Select(role =>
-                new Claim(ClaimTypes.Role, role)));
 
         var token = new JwtSecurityToken(
             issuer: jwtSettings["Issuer"],

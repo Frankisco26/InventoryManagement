@@ -1,0 +1,191 @@
+@{
+    ViewData["Title"] = "Empresas";
+}
+
+<section>
+    @Html.AntiForgeryToken()
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="actions">
+                <div class="btn-group btn-group-devided">
+                    <a class="botonAnimado btn btn-sm btn-success text-white" onclick="showLoader();" href="@Url.Action("Crear", "Empresas")?id=0">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <img width='25' src='/images/menu/nuevo.png' />
+                            </div>
+                        </div>
+                        <span>Nueva</span>
+                    </a>
+                    <a class="botonAnimado btn btn-sm btn-success text-white tool-action" data-action="0" href="#">
+                        <div class="svg-wrapper-1">
+                            <div class="svg-wrapper">
+                                <img width='25' src='/images/menu/excel.png' />
+                            </div>
+                        </div>
+                        <span>Excel</span>
+                    </a>
+                </div>
+            </div>
+            <div class="actions btn-group">
+                <b><i class="fas fa-building mr-2"></i>@($"{ViewData["Title"]}")</b>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="tableFixHead">
+                <table id="tb-empresas" class="table table-striped table-bordered display" style="width:100%">
+                    <thead>
+                        <tr>
+                            <th>Identificación</th>
+                            <th>Nombre</th>
+                            <th>Teléfono</th>
+                            <th>Correo</th>
+                            <th>Módulos</th>
+                            <th>Usuarios</th>
+                            <th>Estado</th>
+                            <th width="48px" data-orderable="false" data-priority="1" class="no-export"></th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        let tableMain = null;
+        let nombreDescarga = "Empresas";
+        let config = {
+            id: "tb-empresas",
+            ajax: {
+                url: '@Url.Action("Listado", "Empresas")',
+                method: 'POST',
+                dataType: "json",
+                contentType: "application/json",
+                data: function (d) {
+                    return JSON.stringify(d);
+                },
+                dataSrc: function (e) {
+                    return e;
+                },
+            },
+            dom: "ftipr",
+            buttons: [
+                { extend: "excel", footer: false, filename: function () { return nombreDescarga; }, exportOptions: { columns: ':not(.no-export)' } }
+            ],
+            columns: [
+                { width: '12%', data: "identificacion" },
+                { width: '25%', data: "nombre" },
+                { width: '10%', data: "telefono" },
+                { width: '15%', data: "correo" },
+                { width: '15%', data: "modulos" },
+                { width: '8%', filter: 'none', type: 'none', className: 'text-center', data: "usuarios" },
+                {
+                    width: '10%', data: "estatus", filter: "select",
+                    render: function (data, type, row, meta) {
+                        var mensaje = "";
+                        var estado = "";
+                        if (data === "ACTIVO") {
+                            mensaje = "Activo";
+                            estado = "badge-success";
+                        }
+                        else if (data === "ESPERA") {
+                            mensaje = "Espera";
+                            estado = "badge-warning";
+                        }
+                        else if (data === "REVISION") {
+                            mensaje = "Revisión";
+                            estado = "badge-warning";
+                        }
+                        else if (data === "SUSPENDIDO") {
+                            mensaje = "Bloqueado";
+                            estado = "badge-danger";
+                        }
+                        else if (data === "INACTIVO") {
+                            mensaje = "Inactivo";
+                            estado = "badge-secondary";
+                        }
+                        else
+                            mensaje = "Desconocido";
+                        return `<span class="badge ${estado}">${mensaje}</span>`;
+                    }
+                },
+                {
+                    width: '5%', filter: 'none', type: 'none', data: null, orderable: false, className: "text-center", render: function (data, type, row, meta) {
+                        var defaultMainActions =
+                            "<span data-toggle='dropdown'>" +
+                            "<a class='btn btn-sm btn-sm-td btn-block btn-primary dropdown-toggle' style='color: white !important;' aria-haspopup='true' aria-expanded='false' >" +
+                            "<img width='20' src='/images/menu/menu.png' />" +
+                            "</a>" +
+                            "</span><div class='dropdown-menu'>";
+
+                        defaultMainActions += `<a class="dropdown-item" href="@Url.Action("Crear", "Empresas")?id=${row["id"]}">Editar</a>`;
+                        if (row["estatus"] === "SUSPENDIDO")
+                            defaultMainActions += '<a class="dropdown-item" href="javascript:;" onclick="cambiarEstado(' + row["id"] + ', 1)">Desbloquear</a>';
+                        else
+                            defaultMainActions += '<a class="dropdown-item text-danger" href="javascript:;" onclick="cambiarEstado(' + row["id"] + ', 3)">Bloquear</a>';
+                        defaultMainActions += '</div>';
+                        return defaultMainActions;
+                    }
+                }
+            ],
+            serverSide: false,
+            processing: false,
+            columnFilter: true,
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function (e) {
+                $('#tb-empresas').wrap("<div class='scrolledTable'></div>");
+            },
+            pageLength: 25
+        };
+
+        $(document).ready(function () {
+            tableMain = configDatatable(config);
+            hideLoader();
+        });
+
+        function cambiarEstado(id, estado) {
+            swal({
+                title: estado === 3 ? "¿Desea bloquear esta empresa?" : "¿Desea desbloquear esta empresa?",
+                text: estado === 3 ? "Sus usuarios no podrán ingresar mientras esté bloqueada" : "",
+                icon: "/images/menu/question.png",
+                buttons: {
+                    cancel: "Cancelar",
+                    confirm: {
+                        text: "Confirmar"
+                    }
+                }
+            }).then((isConfirm) => {
+                if (isConfirm === true) {
+                    var antiForgeryToken = $("input[name=__RequestVerificationToken]").val();
+                    $.ajax({
+                        type: "POST",
+                        url: '@Url.Action("CambiarEstado", "Empresas")',
+                        data: { "Id": id, "Estado": estado },
+                        headers: { 'RequestVerificationToken': antiForgeryToken },
+                        datatype: "json",
+                        beforeSend: function () {
+                            showLoader();
+                        },
+                        success: function (data) {
+                            hideLoader();
+                            if (data.tipo == "c")
+                                swal("¡Correcto!", data.mensaje, "/images/menu/success.png").then((value) => {
+                                    tableMain.ajax.reload();
+                                });
+                            else
+                                swal("¡Advertencia!", data.mensaje, "/images/menu/error.png");
+                        },
+                        error: function (error) {
+                            console.log(error);
+                            hideLoader();
+                        }
+                    });
+                }
+            });
+        }
+    </script>
+}

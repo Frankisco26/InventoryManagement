@@ -1,3 +1,4 @@
+using InventoryManagement.Data.Base;
 using InventoryManagement.Data.Dtos;
 using InventoryManagement.Models;
 using Microsoft.EntityFrameworkCore;
@@ -5,31 +6,34 @@ using Microsoft.Extensions.Logging;
 
 namespace InventoryManagement.Data.Services
 {
+    /// <summary>
+    /// Todas las operaciones se hacen dentro de la empresa indicada (multiempresa).
+    /// </summary>
     public interface IProductService
     {
-        Task<ProductDto?> GetByIdAsync(int id);
-        Task<IEnumerable<ProductDto>> GetAllAsync(string? category = null, int? lowStockThreshold = null);
-        Task<ProductDto> CreateAsync(CreateProductDto dto, string userId);
-        Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto, string userId);
-        Task<bool> DeleteAsync(int id);
-        Task<bool> ProductExistsAsync(int id);
+        Task<ProductDto?> GetByIdAsync(int empresaId, int id);
+        Task<IEnumerable<ProductDto>> GetAllAsync(int empresaId, string? category = null, int? lowStockThreshold = null);
+        Task<ProductDto> CreateAsync(int empresaId, CreateProductDto dto, string userId);
+        Task<ProductDto> UpdateAsync(int empresaId, int id, UpdateProductDto dto, string userId);
+        Task<bool> DeleteAsync(int empresaId, int id);
+        Task<bool> ProductExistsAsync(int empresaId, int id);
     }
 
     public class ProductService : IProductService
     {
-        private readonly ApplicationDbContext _context;
+        private readonly ContextoPrincipal _context;
         private readonly ILogger<ProductService> _logger;
 
-        public ProductService(ApplicationDbContext context, ILogger<ProductService> logger)
+        public ProductService(ContextoPrincipal context, ILogger<ProductService> logger)
         {
             _context = context;
             _logger = logger;
         }
 
-        public async Task<ProductDto?> GetByIdAsync(int id)
+        public async Task<ProductDto?> GetByIdAsync(int empresaId, int id)
         {
             var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == id);
+                .FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
 
             if (product == null)
                 return null;
@@ -37,9 +41,9 @@ namespace InventoryManagement.Data.Services
             return MapToDto(product);
         }
 
-        public async Task<IEnumerable<ProductDto>> GetAllAsync(string? category = null, int? lowStockThreshold = null)
+        public async Task<IEnumerable<ProductDto>> GetAllAsync(int empresaId, string? category = null, int? lowStockThreshold = null)
         {
-            var query = _context.Products.AsQueryable();
+            var query = _context.Products.Where(p => p.EmpresaId == empresaId);
 
             // Filtrar por categoría si se proporciona
             if (!string.IsNullOrWhiteSpace(category))
@@ -54,17 +58,18 @@ namespace InventoryManagement.Data.Services
             return products.Select(MapToDto);
         }
 
-        public async Task<ProductDto> CreateAsync(CreateProductDto dto, string userId)
+        public async Task<ProductDto> CreateAsync(int empresaId, CreateProductDto dto, string userId)
         {
-            // Validar que el SKU sea único
+            // Validar que el SKU sea único dentro de la empresa
             var skuExists = await _context.Products
-                .AnyAsync(p => p.SKU.ToLower() == dto.SKU.ToLower());
+                .AnyAsync(p => p.EmpresaId == empresaId && p.SKU.ToLower() == dto.SKU.ToLower());
 
             if (skuExists)
                 throw new InvalidOperationException($"Ya existe un producto con el SKU '{dto.SKU}'");
 
             var product = new Product
             {
+                EmpresaId = empresaId,
                 Name = dto.Name,
                 SKU = dto.SKU.ToUpper(),
                 Category = dto.Category,
@@ -78,14 +83,14 @@ namespace InventoryManagement.Data.Services
             _context.Products.Add(product);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Producto creado: {product.Id} - {product.Name}");
+            _logger.LogInformation($"Producto creado: {product.Id} - {product.Name} (empresa {empresaId})");
 
             return MapToDto(product);
         }
 
-        public async Task<ProductDto> UpdateAsync(int id, UpdateProductDto dto, string userId)
+        public async Task<ProductDto> UpdateAsync(int empresaId, int id, UpdateProductDto dto, string userId)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
             if (product == null)
                 throw new KeyNotFoundException($"Producto con ID {id} no encontrado");
 
@@ -98,28 +103,28 @@ namespace InventoryManagement.Data.Services
 
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Producto actualizado: {product.Id} - {product.Name}");
+            _logger.LogInformation($"Producto actualizado: {product.Id} - {product.Name} (empresa {empresaId})");
 
             return MapToDto(product);
         }
 
-        public async Task<bool> DeleteAsync(int id)
+        public async Task<bool> DeleteAsync(int empresaId, int id)
         {
-            var product = await _context.Products.FindAsync(id);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id && p.EmpresaId == empresaId);
             if (product == null)
                 return false;
 
             _context.Products.Remove(product);
             await _context.SaveChangesAsync();
 
-            _logger.LogInformation($"Producto eliminado: {id}");
+            _logger.LogInformation($"Producto eliminado: {id} (empresa {empresaId})");
 
             return true;
         }
 
-        public async Task<bool> ProductExistsAsync(int id)
+        public async Task<bool> ProductExistsAsync(int empresaId, int id)
         {
-            return await _context.Products.AnyAsync(p => p.Id == id);
+            return await _context.Products.AnyAsync(p => p.Id == id && p.EmpresaId == empresaId);
         }
 
         private ProductDto MapToDto(Product product)

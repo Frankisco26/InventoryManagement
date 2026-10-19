@@ -1,0 +1,44 @@
+@page
+@model LockoutModel
+@{
+    ViewData["Title"] = Model.Titulo;
+}
+
+@section Styles {
+    <style>
+        .login {
+            padding: 1rem;
+        }
+
+        .demo {
+            position: absolute;
+            width: 34rem;
+            max-width: 95%;
+            margin: 5px
+        }
+    </style>
+}
+
+<section id="welcome" class="pricing py-5">
+    <div class="container w-100">
+        <div class="row">
+            <div class="col demo">
+                <div id="main-hero" class="login shadow animated fadeInDown">
+                    <div class="row">
+                        <div class="col-12 colorLetras">
+                            <h1 class="lead text-left">@Model.Titulo</h1>
+                            <p>
+                                @Model.Mensaje
+                            </p>
+                            <p>
+                                <a class="btn btn-primary" asp-page="./Logout" role="button">
+                                    Volver al inicio
+                                </a>
+                            </p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

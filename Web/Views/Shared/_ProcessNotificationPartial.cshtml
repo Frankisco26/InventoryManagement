@@ -1,0 +1,101 @@
+﻿@{
+
+    var modelState = this.ViewContext.ModelState;
+
+    var heading = ViewData.ContainsKey("Heading") ? bool.Parse(ViewData["Heading"]?.ToString() ?? "false") : false;
+    bool details = ViewData.ContainsKey("Details") ? bool.Parse(ViewData["Details"]?.ToString() ?? "true") : true;
+    bool inline = ViewData.ContainsKey("InLine") ? bool.Parse(ViewData["InLine"]?.ToString() ?? "true") : true;
+    bool dismiss = ViewData.ContainsKey("Dismiss") ? bool.Parse(ViewData["Dismiss"]?.ToString() ?? "true") : true;
+    string message = ViewData.ContainsKey("Message") ? ViewData["Message"]?.ToString() ?? string.Empty : string.Empty;
+
+    //if ((ModelState == null || !ModelState.Any()) || Session["ModelState"] != null)
+    //{
+    //    ModelState = (ModelStateDictionary)Session["ModelState"];
+    //    Session["ModelState"] = null;
+    //}
+
+    if (string.IsNullOrEmpty(message) && modelState != null)
+    {
+        message = !modelState.IsValid ? "Hay un inconveniente en la operación." : "Procesado satisfactoriamente.";
+    }
+}
+
+@if (modelState != null)
+{
+    if (!modelState.IsValid)
+    {
+        <div class="alert alert-danger alert-dismissible alert-fixed-bottom">
+            @if (dismiss)
+            {
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            }
+            @if (heading)
+            {
+                <h4 class="alert-heading">Error</h4>
+                <p>
+                    @(ViewData["Danger"] ?? message)
+                </p>
+            }
+            else if (inline)
+            {
+                <b>Error:</b>
+                @(ViewData["Danger"] ?? message)
+            }
+            @if (details && modelState.Any())
+            {
+                <ul style="list-style: none; font-size: small;">
+                    @foreach (var item in modelState.SelectMany(m => m.Value!.Errors).Where(e => !string.IsNullOrEmpty(e.ErrorMessage)).Select(m => m.ErrorMessage).Distinct())
+                    {
+                        <li>
+                            @(string.Join("<br />", item))
+                        </li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+    else if (this.ViewContext.IsPost() && modelState.IsValid)
+    {
+        <div class="alert alert-success alert-dismissible alert-fixed-bottom">
+            @if (dismiss)
+            {
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            }
+            @if (heading)
+            {
+                <h4 class="alert-heading">Correcto</h4>
+                <p>@(ViewData["Success"] ?? message)</p>
+            }
+            else if (inline)
+            {
+                <b>Correcto:</b>
+                @(ViewData["Success"] ?? message)
+            }
+        </div>
+    }
+    else if (ViewBag.StatusMessage != null)
+    {
+        <div class="alert alert-success alert-dismissible alert-fixed-bottom">
+            @if (dismiss)
+            {
+                <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                    <span aria-hidden="true">&times;</span>
+                </button>
+            }
+            @if (heading)
+            {
+                <h4 class="alert-heading">Información</h4>
+                <p>@(ViewBag.StatusMessage)</p>
+            }
+            else if (inline)
+            {
+                <b>Información:</b>
+                @(ViewBag.StatusMessage)
+            }
+        </div>
+    }
+}

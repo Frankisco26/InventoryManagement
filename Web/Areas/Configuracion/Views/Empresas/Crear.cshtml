@@ -1,0 +1,248 @@
+@model EmpresaEditViewModel
+@{
+    ViewData["Title"] = " Configuración de Empresas";
+    var esNueva = Model.Id == 0;
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/tabs.css" asp-append-version="true" />
+}
+
+<section>
+    <form asp-controller="Empresas" asp-action="CrearActualizar" id="formEmpresa" method="post">
+        <div class="portlet light">
+            <div class="portlet-title">
+                <div class="actions">
+                    <div class="btn-group btn-group-devided">
+                        <a href="@Url.Action("Inicio", "Empresas")" class="botonAnimado btn btn-sm btn-danger text-white">
+                            <div class="svg-wrapper-1">
+                                <div class="svg-wrapper">
+                                    <img width='25' src='/images/menu/cancelar.png' />
+                                </div>
+                            </div>
+                            <span>Cancelar</span>
+                        </a>
+
+                        <button type="button" id="btnGuardar" class="botonAnimado btn btn-sm btn-success text-white" onclick="$('#formEmpresa').trigger('submit');">
+                            <div class="svg-wrapper-1">
+                                <div class="svg-wrapper">
+                                    <img width='25' src='/images/menu/salvar.png' />
+                                </div>
+                            </div>
+                            <span>Almacenar</span>
+                        </button>
+                    </div>
+                    <div class="actions btn-group">
+                        <b><i class="fas fa-building mr-2"></i>@($"{ViewData["Title"]}")</b>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <ul class="nav nav-tabs justify-content-center" role="tablist">
+                            <li class="nav-item">
+                                <a class="nav-link active" data-toggle="tab" href="#home" role="tab">
+                                    <i class="fas fa-user-tie"></i> Datos Empresa
+                                </a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" data-toggle="tab" href="#settings" role="tab">
+                                    <i class="fas fa-check-circle"></i> Módulos
+                                </a>
+                            </li>
+                        </ul>
+                    </div>
+                    <div class="card-body">
+                        <div class="tab-content">
+                            <div class="tab-pane active" id="home" role="tabpanel">
+                                <input type="hidden" asp-for="Id" />
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Ruc</label>
+                                            <label class="control-label text-danger">*</label>
+                                            @if (esNueva)
+                                            {
+                                                <input asp-for="Identificacion" class="form-control form-control-sm input-number" maxlength="13" />
+                                            }
+                                            else
+                                            {
+                                                <input asp-for="Identificacion" class="form-control form-control-sm" readonly />
+                                            }
+                                            <span asp-validation-for="Identificacion" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Estatus</label>
+                                            <select asp-for="Estatus" asp-items="EmpresaEditViewModel.TiposEstatus()" class="form-control form-control-sm"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Tipo</label>
+                                            <select asp-for="Tipo" asp-items="EmpresaEditViewModel.TiposEmpresas()" class="form-control form-control-sm"></select>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-3 pt-4">
+                                        <div class="form-group">
+                                            <div class="icheck-primary icheck-inline">
+                                                <input asp-for="LlevaContable" type="checkbox" />
+                                                <label asp-for="LlevaContable">Lleva contabilidad</label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Nombre</label>
+                                            <label class="control-label text-danger">*</label>
+                                            <input asp-for="Nombre" class="form-control form-control-sm" />
+                                            <span asp-validation-for="Nombre" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Razón Social</label>
+                                            <label class="control-label text-danger">*</label>
+                                            <input asp-for="RazonSocial" class="form-control form-control-sm" />
+                                            <span asp-validation-for="RazonSocial" class="text-danger"></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Correo</label>
+                                            <label class="control-label text-danger">*</label>
+                                            <input asp-for="Correo" class="form-control form-control-sm" />
+                                            <span asp-validation-for="Correo" class="text-danger"></span>
+                                            @if (esNueva)
+                                            {
+                                                <small class="form-text text-muted">Será el usuario administrador de la empresa.</small>
+                                            }
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Teléfono</label>
+                                            <input asp-for="Telefono" class="form-control form-control-sm" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Persona de contacto</label>
+                                            <input asp-for="PersonaContacto" class="form-control form-control-sm" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-4">
+                                        <div class="form-group">
+                                            <label class="control-label">Identificación representante legal</label>
+                                            <input asp-for="IdentificacionRepresentanteLegal" class="form-control form-control-sm input-number" maxlength="13" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-8">
+                                        <div class="form-group">
+                                            <label class="control-label">Representante legal</label>
+                                            <input asp-for="NombreRepresentanteLegal" class="form-control form-control-sm" />
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Actividad económica</label>
+                                            <input asp-for="ActividadEcononica" class="form-control form-control-sm" />
+                                        </div>
+                                    </div>
+                                    <div class="col-sm-12 col-lg-6">
+                                        <div class="form-group">
+                                            <label class="control-label">Dirección</label>
+                                            <input asp-for="Direccion" class="form-control form-control-sm" />
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="tab-pane" id="settings" role="tabpanel">
+                                <div class="row" id="contenedorModulos">
+                                    @foreach (var item in Model.Modulos)
+                                    {
+                                        <div class='col-sm-12 col-lg-3'>
+                                            <div class='checkbox icheck-primary'>
+                                                <input type='checkbox' id='@item.Codigo' name='@item.Codigo' @(item.Activo ? " checked" : "") value='@item.Nombre' />
+                                                <label class='control-label' for='@item.Codigo'>@item.Nombre</label>
+                                            </div>
+                                        </div>
+                                    }
+                                </div>
+                                <small class="text-muted">El rol Administrador de la empresa recibe las pantallas de los módulos seleccionados.</small>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </form>
+</section>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $("#formEmpresa").submit(function (e) {
+                e.preventDefault();
+                if ($(this).valid && !$(this).valid()) {
+                    $('.nav-tabs a[href="#home"]').tab('show');
+                    return false;
+                }
+
+                swal({
+                    title: "¿Está seguro de guardar la empresa?",
+                    text: "@(esNueva ? "Se creará el rol Administrador y el usuario administrador de la empresa" : "Se actualizarán los datos y módulos de la empresa")",
+                    icon: "/images/menu/question.png",
+                    buttons: {
+                        cancel: "Cancelar",
+                        confirm: {
+                            text: "Confirmar"
+                        }
+                    }
+                }).then((isConfirm) => {
+                    if (isConfirm === true) {
+                        $.ajax({
+                            url: $("#formEmpresa").attr("action"),
+                            data: $("#formEmpresa").serialize(),
+                            dataType: 'json',
+                            type: 'POST',
+                            beforeSend: function () {
+                                showLoader();
+                            },
+                            success: function (res) {
+                                hideLoader();
+                                if (res.op) {
+                                    swal("¡Bien!", res.mensaje, "/images/menu/success.png").then((value) => {
+                                        showLoader();
+                                        window.location.href = '@Url.Action("Inicio", "Empresas")';
+                                    });
+                                } else {
+                                    swal("¡Advertencia!", res.mensaje, "/images/menu/error.png");
+                                }
+                            },
+                            error: function () {
+                                hideLoader();
+                                swal("¡Advertencia!", "No se pudo guardar la empresa.", "/images/menu/error.png");
+                            }
+                        });
+                    }
+                });
+            });
+
+            hideLoader();
+        });
+    </script>
+}

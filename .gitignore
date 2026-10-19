@@ -320,7 +320,8 @@ orleans.codegen.cs
 # (https://github.com/github/gitignore/pull/1529#issuecomment-104372622)
 #bower_components/
 # ASP.NET Core default setup: bower directory is configured as wwwroot/lib/ and bower restore is true
-**/wwwroot/lib/
+# Las librerías de wwwroot/lib (DataTables, jszip, pdfmake) se versionan igual que en Contagestor.
+#**/wwwroot/lib/
 
 # RIA/Silverlight projects
 Generated_Code/

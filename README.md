@@ -1,19 +1,17 @@
 # Inventory Management System
 
-Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollador senior,desarrollado con tecnologías modernas de Microsoft usando ASP.NET Core 8 y Blazor Server.
+Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollador senior, desarrollado con tecnologías modernas de Microsoft usando ASP.NET Core 10 MVC y Bootstrap, con la misma arquitectura multiempresa de Contagestor.
 
 ---
 
 # Tecnologías Utilizadas
 
-- ASP.NET Core 8
-- Blazor Server
-- Entity Framework Core
+- ASP.NET Core 10 (MVC + Razor Pages para Identity)
+- Entity Framework Core 10
 - SQL Server
 - ASP.NET Identity
-- JWT Authentication
-- Bootstrap 5
-- Bootstrap Icons
+- JWT Authentication (API REST)
+- Bootstrap 4, jQuery, DataTables, SweetAlert, Font Awesome
 - C#
 - LINQ
 - REST APIs
@@ -24,83 +22,81 @@ Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollado
 
 El sistema está dividido en múltiples capas para mantener una arquitectura limpia, escalable y mantenible.
 
+```text
 InventoryManagement
 │
 ├── Web
-│   ├── Components
-│   ├── Controllers
-│   ├── Services
-│   ├── Pages
-│   ├── Authentication
-│   ├── Layout
+│   ├── Areas
+│   │   ├── Identity        (Login, Logout, AccessDenied, Lockout)
+│   │   ├── Configuracion   (Panel inicial, Empresas, Usuarios, Permisos)
+│   │   └── Stock           (Productos, Movimientos)
+│   ├── Controllers         (Principal y API REST)
+│   ├── Extensiones         (Autorización por módulo, sesión, identidad)
+│   ├── Services            (Empresas del usuario, JWT)
+│   ├── Views               (Layouts, menú lateral, selector de empresa)
 │   └── wwwroot
 │
 ├── Data
-│   ├── Data
-│   ├── DTOs
+│   ├── Base                (ContextoIdentidad, ContextoPrincipal, datos iniciales)
+│   ├── Dtos
 │   ├── Services
-│   └── Migrations
+│   └── Migraciones
+│       ├── Identidad
+│       └── Principal
 │
 └── Models
+    ├── Identidad           (Usuario, Rol, Pantalla, RolPantalla...)
+    ├── Administracion      (Empresa, Modulo, Parametro)
+    ├── Utilitarios
+    └── Models              (Product, StockMovement)
+```
 
+---
 
 # Características del Sistema
 
+## Multiempresa
+
+- Cada producto pertenece a una empresa; todas las consultas filtran por la empresa activa.
+- Un usuario puede tener roles en varias empresas y cambiar entre ellas desde el menú de usuario ("Cambiar empresa").
+- La empresa activa se guarda en la sesión con sus módulos y las pantallas que permite el rol.
+
 ## Autenticación y Seguridad
 
-- Login con ASP.NET Identity
-- Registro de usuarios
-- Roles y permisos
-- JWT Bearer Authentication
-- Cookies Authentication
-- Protección de APIs
-- Claims Authentication
-- Password hashing
-- Authorization Policies
+- Login con ASP.NET Identity (contexto `ContextoIdentidad`, esquema `db_identidad`)
+- Roles por empresa con asignación de pantallas y permisos de crear / editar / eliminar
+- Autorización por módulo: el módulo debe estar activo en la empresa y la pantalla asignada al rol
+- Bloqueo y desbloqueo de usuarios
+- JWT Bearer Authentication para la API
+- Cookies Authentication para la aplicación web
 
----
+## Configuración
+
+- Empresas: crear, editar, bloquear y elegir sus módulos. Al crear una empresa se genera su rol Administrador y su usuario administrador (usuario = correo de la empresa, contraseña = primeros 10 dígitos del RUC).
+- Usuarios: crear, editar, asignar empresas/roles, bloquear, habilitar y restablecer contraseña.
+- Permisos: roles por empresa con sus pantallas.
 
 ## Gestión de Productos
 
-- Crear productos
-- Editar productos
-- Eliminar productos
-- Consultar productos
-- Control de stock
-- Categorías
-- Descripciones
-- Precios
-- Inventario mínimo
-
----
+- Crear, editar, consultar y eliminar productos
+- Control de stock y stock mínimo
+- Categorías y precios
 
 ## Movimientos de Inventario
 
-- Entradas de inventario
-- Salidas de inventario
-- Historial de movimientos
-- Control de usuarios por movimiento
-- Fecha de movimiento
-- Tipo de movimiento
-- Cantidades
-
----
+- Entradas y salidas de inventario
+- Historial de movimientos por producto
+- Validación de stock insuficiente
 
 ## APIs REST
 
-- CRUD Productos
-- CRUD Movimientos
-- APIs protegidas con JWT
-- Responses tipadas
-- DTOs
-- Validaciones
-- Control de errores
+- `POST api/auth/token` para obtener el token de una empresa del usuario
+- CRUD Productos y movimientos (`api/products`, `api/products/{id}/movements`)
+- APIs protegidas con JWT, limitadas a la empresa del token
 
 ---
 
 # Configuración del Proyecto
-
----
 
 # Clonar Repositorio
 
@@ -112,17 +108,12 @@ git clone https://github.com/Frankisco26/InventoryManagement.git
 
 # Configuración Base de Datos
 
-Modificar el archivo:
-
-```
-appsettings.json
-```
-
-# Connection String
+Modificar el archivo `Web/appsettings.json` (y `appsettings.Development.json`):
 
 ```json
 "ConnectionStrings": {
-  "DefaultConnection": "Data Source=localhost;Initial Catalog=InventoryManagement;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
+  "ContextoIdentidad": "Data Source=localhost;Initial Catalog=InventoryManagement;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False",
+  "ContextoPrincipal": "Data Source=localhost;Initial Catalog=InventoryManagement;Integrated Security=True;Connect Timeout=30;Encrypt=False;TrustServerCertificate=False;ApplicationIntent=ReadWrite;MultiSubnetFailover=False"
 }
 ```
 
@@ -143,33 +134,27 @@ appsettings.json
 
 # Migraciones
 
-Abrir:
-
-```text
-Package Manager Console
-```
-
-Ejecutar:
+Igual que en Contagestor, se usa el script `migrate.ps1` en la raíz (instala `dotnet-ef` desde `dotnet-tools.json`). El parámetro `-context` es `Identidad` o `Principal` (por defecto `Principal`):
 
 ```powershell
-Update-Database
+./migrate.ps1 -context Identidad -update               # aplica las migraciones de identidad
+./migrate.ps1 -context Principal -update               # aplica las migraciones principales
+./migrate.ps1 -context Principal -name NuevoCambio     # crea una migración
+./migrate.ps1 -context Principal -name NuevoCambio -update
+./migrate.ps1 -context Principal -rollback             # quita la última migración
+./migrate.ps1 -context Principal -output Release       # genera el script SQL en Data/Migraciones/Principal/Scripts
 ```
 
 ---
 
-# Seed Inicial
+# Datos Iniciales
 
-El sistema genera automáticamente un usuario administrador al iniciar.
+Las migraciones siembran:
 
-## Usuario Administrador
-
-```text
-Correo:
-admin@inventory.com
-
-Contraseña:
-Admin123*
-```
+- Empresa principal `1250130620001` con los módulos Configuración y Stock
+- Pantallas: Empresas, Usuarios, Permisos, Productos y Movimientos
+- Rol `Administrador` de la empresa principal con todas las pantallas
+- Usuario principal `MANTENIMIENTO` (usuario `1727495366001`), el mismo de Contagestor
 
 ---
 
@@ -181,12 +166,10 @@ Admin123*
  Dar click derecho sobre el proyecto Web y escoger la opción establecer como proyecto de inicio. Luego presionar F5
 ```
 
----
-
 ## Desde CLI
 
 ```bash
-dotnet run
+dotnet run --project Web
 ```
 
 ---
@@ -198,212 +181,3 @@ dotnet run
 ```text
 https://localhost:7001
 ```
-
----
-
-## APIs REST
-
-### Productos
-
-```text
-https://localhost:7001/api/products
-```
-
-### Movimientos
-
-```text
-https://localhost:7001/api/stockmovements
-```
-
----
-
-# Arquitectura de Seguridad
-
-El sistema usa dos tipos de autenticación.
-
----
-
-# Blazor UI
-
-Usa:
-
-```text
-ASP.NET Identity Cookies
-```
-
-Para manejar sesiones autenticadas en la interfaz.
-
----
-
-# APIs
-
-Usa:
-
-```text
-JWT Bearer Authentication
-Para proteger endpoints REST.
-```
-
-# Dependencias Principales
-
-```xml
-Microsoft.AspNetCore.Identity.EntityFrameworkCore
-Microsoft.EntityFrameworkCore.SqlServer
-Microsoft.AspNetCore.Authentication.JwtBearer
-System.IdentityModel.Tokens.Jwt
-```
-
----
-
-# Buenas Prácticas Implementadas
-
-- Arquitectura por capas
-- Dependency Injection
-- DTO Pattern
-- Service Pattern
-- JWT Authentication
-- Entity Framework Core
-- Async/Await
-- Repository Pattern
-- Claims Authentication
-- Authorization
-- Validaciones
-- Separation of Concerns
-- SOLID Principles
-
----
-
-
-# Estructura Técnica
-
-## Controllers
-
-Responsables de exponer APIs REST.
-
----
-
-## Services
-
-Contienen lógica de negocio.
-
----
-
-## DTOs
-
-Objetos de transferencia de datos.
-
----
-
-## Models
-
-Entidades del sistema.
-
----
-
-## DbContext
-
-Manejo de Entity Framework Core.
-
----
-
-## Authentication
-
-Manejo de Identity y JWT.
-
----
-
-# Flujo de Autenticación
-
-```text
-Blazor Login
-↓
-ASP.NET Identity
-↓
-Cookie Authentication
-↓
-JWT Generation
-↓
-Bearer Token
-↓
-Protected APIs
-↓
-SQL Server
-```
-
----
-
-# Herramientas Utilizadas
-
-- Visual Studio 2022
-- SQL Server
-- Git
-- GitHub
-- Fork
-- Insomnia
-
----
-
-# Archivos Importantes
-
-## Program.cs
-
-Configuración principal del sistema.
-
----
-
-## appsettings.json
-
-Configuraciones generales.
-
----
-
-## JwtService.cs
-
-Generación de JWT Tokens.
-
----
-
-## AuthService.cs
-
-Manejo de autenticación del frontend.
-
----
-
-## DbSeeder.cs
-
-Carga inicial de usuarios y roles.
-
----
-
-# Licencia
-
-Proyecto de uso educativo y demostrativo.
-
----
-
-# Autor
-
-Francisco Aguirre
-
----
-
-# Contacto
-
-```text
-faguirrea1@gmail.com - 0998095771
-```
-
----
-
-# Notas
-
-Este proyecto fue desarrollado usando:
-
-- ASP.NET Core 8
-- Blazor Server
-- Clean Architecture
-- JWT Authentication
-- Identity Framework
-- SQL Server
-
-siguiendo buenas prácticas modernas de desarrollo empresarial.

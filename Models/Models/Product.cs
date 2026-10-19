@@ -1,3 +1,4 @@
+using InventoryManagement.Models.Administracion;
 
 namespace InventoryManagement.Models
 {
@@ -8,7 +9,7 @@ namespace InventoryManagement.Models
         public string Name { get; set; } = string.Empty;
 
         /// <summary>
-        /// SKU (Stock Keeping Unit) - Único para cada producto
+        /// SKU (Stock Keeping Unit) - Único para cada producto dentro de la empresa
         /// </summary>
         public string SKU { get; set; } = string.Empty;
 
@@ -29,7 +30,14 @@ namespace InventoryManagement.Models
         public string? UpdatedBy { get; set; }
 
         /// <summary>
-        /// Relación con movimientos de stock 
+        /// Empresa a la que pertenece el producto (multiempresa)
+        /// </summary>
+        public int EmpresaId { get; set; }
+
+        public Empresa? Empresa { get; set; }
+
+        /// <summary>
+        /// Relación con movimientos de stock
         /// </summary>
         public ICollection<StockMovement> StockMovements { get; set; } = new List<StockMovement>();
     }
