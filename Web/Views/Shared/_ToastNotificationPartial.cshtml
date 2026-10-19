@@ -58,6 +58,6 @@
         }
     }
     $(document).ready(function () {
-        showToast("@TempData["tipo"]", "@TempData["mensaje"]");
+        showToast(@Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["tipo"]?.ToString() ?? "")), @Html.Raw(System.Text.Json.JsonSerializer.Serialize(TempData["mensaje"]?.ToString() ?? "")));
     });
 </script>

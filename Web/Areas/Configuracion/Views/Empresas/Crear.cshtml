@@ -194,6 +194,8 @@
 @section Scripts {
     <partial name="_ValidationScriptsPartial" />
     <script>
+        const esNueva = @(esNueva ? "true" : "false");
+
         $(document).ready(function () {
             $("#formEmpresa").submit(function (e) {
                 e.preventDefault();
@@ -204,7 +206,9 @@
 
                 swal({
                     title: "¿Está seguro de guardar la empresa?",
-                    text: "@(esNueva ? "Se creará el rol Administrador y el usuario administrador de la empresa" : "Se actualizarán los datos y módulos de la empresa")",
+                    text: esNueva
+                        ? "Se creará el rol Administrador y el usuario administrador de la empresa"
+                        : "Se actualizarán los datos y módulos de la empresa",
                     icon: "/images/menu/question.png",
                     buttons: {
                         cancel: "Cancelar",
