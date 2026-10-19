@@ -1,0 +1,126 @@
+@page
+@model LoginModel
+
+@{
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/login.css" asp-append-version="true" />
+
+    <style>
+        .password-wrapper {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-wrapper .form-control {
+            padding-right: 40px;
+        }
+
+        .toggle-password-icon {
+            position: absolute;
+            right: 12px;
+            top: 50%;
+            transform: translateY(-50%);
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            opacity: 0.75;
+            transition: opacity 0.2s ease;
+            z-index: 2;
+        }
+
+        .toggle-password-icon:hover {
+            opacity: 1;
+        }
+    </style>
+}
+
+<div class="container-fluid image">
+    <div class="row">
+        <div class="col-sm-12 col-lg-8 animated flipInX mt-5">
+        </div>
+        <div class="col-sm-12 col-lg-4 animated bounceIn">
+            <div id="loginContainer">
+                <div id="loginPicture">
+                    <div class="">
+                        <b style="font-size:1.7rem;"><span style="color:#1a4c52;">Iniciar </span><span style="color: #ed6c23;">sesión</span></b>
+                        <span class="linea"></span>
+                        <p style="font-size:0.8rem;">Ingrese sus credenciales para iniciar sesión</p>
+                    </div>
+                </div>
+                <div class="col-12">
+                    <div class="container">
+                        <div class="row">
+                            <div class="col">
+                                <partial name="_ProcessNotificationPartial" />
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <form id="account" method="post" class="pt-3">
+                    <div class="form-group">
+                        <label class="colorLetras">Usuario</label>
+                        <input asp-for="Input.Email" class="form-control form-control-sm" placeholder="Usuario"
+                               autocomplete="username" autocapitalize="none" autocorrect="off" spellcheck="false">
+                        <span asp-validation-for="Input.Email" class="text-danger"></span>
+                    </div>
+                    <div class="form-group">
+                        <label class="colorLetras" asp-for="Input.Password"></label>
+                        <div class="password-wrapper">
+                            <input type="password" asp-for="Input.Password" id="passwordInput" class="form-control form-control-sm" placeholder="Contraseña"
+                                   autocomplete="current-password">
+                            <span id="togglePassword" class="toggle-password-icon">
+                                <svg id="ojoAbierto" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ed6c23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                    <circle cx="12" cy="12" r="3"></circle>
+                                </svg>
+                                <svg id="ojoCerrado" xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#ed6c23" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="display:none;">
+                                    <path d="M17.94 17.94A10.94 10.94 0 0 1 12 20c-7 0-11-8-11-8a18.5 18.5 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path>
+                                    <line x1="1" y1="1" x2="23" y2="23"></line>
+                                </svg>
+                            </span>
+                        </div>
+                        <span asp-validation-for="Input.Password" class="text-danger"></span>
+                    </div>
+                    <div class="text-center">
+                        <button id="btnAcceder" type="button" style="width: 100%; padding: 12px; margin: 15px 0; color: white; background-color: #1a4c52; border: none; border-radius: 4px; font-size: 16px; font-weight: bold; cursor: pointer;">
+                            Ingresar al sistema
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        $(document).ready(function () {
+            $("#btnAcceder").on("click", function () {
+                var $btn = $(this);
+                if ($("#account").valid && !$("#account").valid())
+                    return;
+                $btn.prop("disabled", true).text("Procesando...");
+                $("#account").submit();
+            });
+
+            $("#account input").on("keypress", function (e) {
+                if (e.which === 13)
+                    $("#btnAcceder").click();
+            });
+
+            $("#togglePassword").on("click", function () {
+                var $input = $("#passwordInput");
+                var isPassword = $input.attr("type") === "password";
+                $input.attr("type", isPassword ? "text" : "password");
+                $("#ojoAbierto").toggle(!isPassword);
+                $("#ojoCerrado").toggle(isPassword);
+            });
+        });
+        $("footer").remove();
+        $("header").remove();
+    </script>
+}

@@ -1,0 +1,26 @@
+@model ErrorViewModel
+@{
+    ViewData["Title"] = "Error";
+}
+
+<section class="pricing py-5 mt-2">
+    <div class="container w-100">
+        <div class="row">
+            <div class="col">
+                <div class="text-center">
+                    <h1 class="font-dark"><i class="fas fa-heart-broken"></i></h1>
+                    <br />
+                    <h5>Ha ocurrido un inconveniente en la solicitud.</h5>
+                    @if (Model?.ShowRequestId == true)
+                    {
+                        <p>
+                            <b>Solicitud:</b> <code>@Model.RequestId</code>
+                        </p>
+                    }
+                    <p>Contáctese con el administrador del sistema.</p>
+                    <a class="btn btn-primary btn-sm" href="~/">Volver al inicio</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>

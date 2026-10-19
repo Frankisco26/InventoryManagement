@@ -1,0 +1,247 @@
+﻿.img-logo {
+    width: 50%;
+    height: 50%;
+    margin-bottom: 1em;
+}
+
+.sesion-text {
+    color: #ff9500; /* o el color naranja que uses */
+}
+
+.linea {
+    display: block;
+    width: 60px; /* ajusta el ancho que desees */
+    height: 4px;
+    background-color: #ff9500; /* color naranja */
+    margin-top: 8px;
+    margin-bottom: 20px;
+}
+
+footer, header {
+    visibility: hidden;
+}
+
+body {
+    background-image: url("../images/loginWallpaper.png");
+    background-size: cover;
+    background-repeat: no-repeat;
+    opacity: 1 !important;
+}
+
+#LibrarianPicture {
+    width: 100%;
+    height: 100%;
+}
+
+#loginContainer {
+    position: relative;
+    margin: auto;
+    max-width: 25rem;
+    top: 3.4rem;
+    border-radius: 1rem;
+    padding: 3rem;
+    background-color: white;
+    /*width: 300px;*/
+    height: auto;
+    margin: auto;
+    margin-top: 25px;
+    margin-bottom: 10px;
+    /*-webkit-box-shadow: 0px 5px 35px 0px rgba(0,0,0,0.75);*/
+    /*-moz-box-shadow: 0px 5px 35px 0px rgba(0,0,0,0.75);*/
+    box-shadow: 0px 5px 35px 0px rgba(0,0,0,0.75);
+}
+
+#loginPicture:hover + #leftEye, #loginPicture:hover + #rightEye {
+    fill: white !important;
+    transform: translate(5px, 0px);
+}
+
+.testClass {
+    width: 10px;
+    height: 10px;
+    background-color: blue;
+    position: absolute;
+    z-index: 100000;
+}
+
+#loginPicture {
+    position: relative;
+    /*width: 250px;*/
+    /*height: 250px;*/
+    /*background-color: #f0940e;*/
+    /*border: 5px solid rgba(240 148 14);*/
+    border-radius: 180px;
+    margin: auto;
+    z-index: 200;
+}
+
+    #loginPicture svg {
+        width: 100%;
+        position: relative;
+        top: -25px;
+        z-index: 0;
+    }
+
+#loginOverlay {
+    position: absolute;
+    background-color: white;
+    border: 5px solid rgba(10,250,252,0.35);
+    width: 250px;
+    height: 250px;
+    top: 30px;
+    margin: auto;
+    border-radius: 180px;
+    z-index: 500;
+}
+
+.loginForm {
+    color: white;
+    margin-top: 25px;
+    padding-bottom: 25px;
+}
+
+    .loginForm label {
+        width: 30%;
+        display: table-cell;
+    }
+
+    .loginForm input {
+        width: 100%;
+        display: block;
+        background-color: transparent;
+        border: 0px solid transparent;
+        border-bottom: 1px solid rgba(10,250,252,1);
+        font-size: 20px;
+        color: white;
+        text-align: center;
+        box-sizing: border-box;
+    }
+
+.loginFormContainer {
+    width: 100%;
+}
+
+#login {
+    -webkit-transition: all 300ms ease-out 0s;
+    -moz-transition: all 300ms ease-out 0s;
+    -o-transition: all 300ms ease-out 0s;
+    transition: all 300ms ease-out 0s;
+    -webkit-box-sizing: border-box;
+    -moz-box-sizing: border-box;
+    box-sizing: border-box;
+    width: 100%;
+    margin-top: 25px;
+    padding: 15px;
+    background-color: grey;
+    border: 1px solid grey;
+    color: rgba(10,250,252,1);
+    ;
+    cursor: pointer;
+}
+
+    #login:hover {
+        -webkit-box-sizing: border-box;
+        -moz-box-sizing: border-box;
+        box-sizing: border-box;
+        background-color: transparent;
+        color: rgba(10,250,252,0.35);
+        border: 1px solid rgba(10,250,252,1);
+    }
+
+input::-webkit-input-placeholder { /* Chrome/Opera/Safari */
+    color: rgba(110,250,252,0.55);
+}
+
+input::-moz-placeholder { /* Firefox 19+ */
+    color: rgba(110,250,252,0.55);
+}
+
+input:-ms-input-placeholder { /* IE 10+ */
+    color: rgba(110,250,252,0.55);
+}
+
+input:-moz-placeholder { /* Firefox 18- */
+    color: rgba(110,250,252,0.55);
+}
+
+
+
+/*regionBotonInicio*/
+button {
+    position: relative;
+    padding: 15px 35px;
+    font-size: 15px;
+    font-weight: bold;
+    /*color: #2F5C2F;*/
+    background-color: transparent;
+    border: 3px solid #000000;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.5s;
+}
+
+    button::after {
+        content: "";
+        position: absolute;
+        width: 100%;
+        height: 100%;
+        top: 10px;
+        left: 10px;
+        background-color: #f0940e;
+        border-radius: 8px;
+        z-index: -1;
+        transition: all 0.5s;
+    }
+
+    button:hover::after {
+        top: 0;
+        left: 0;
+    }
+
+.icon-1 {
+    position: absolute;
+    width: 15%;
+    top: -1px;
+    right: 53px;
+    color: #2F5C2F;
+    transform-origin: 100% 100%;
+    transform: rotate(-25deg) translateX(120%) translateY(20%);
+    z-index: -1;
+    transition: all 0.5s;
+}
+
+button:hover .icon-1 {
+    width: 25%;
+    transform: rotate(10deg) translateX(210%) translateY(-40%);
+}
+
+.icon-2 {
+    position: absolute;
+    width: 15%;
+    top: 20px;
+    left: 10px;
+    color: #2F5C2F;
+    transform-origin: 100% 100%;
+    z-index: -1;
+    transition: all 0.5s;
+}
+
+button:hover .icon-2 {
+    width: 50%;
+    top: -25px;
+    left: -80px;
+    transform: rotate(90deg);
+    z-index: 1;
+}
+
+/*Contagestor*/
+#btnIniciarSesion {
+    background-color: /*#ff9500;*/ #163658;
+    border-color: /*#ff9500;*/ #163658;
+}
+
+#imgLogoEmpresas {
+    content: url("../images/logo.png");
+    max-width: 120px !important;
+    max-height: 120px !important;
+}

@@ -1,0 +1,710 @@
+﻿<environment
+    include="Development">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-responsive-bs4/css/responsive.bootstrap4.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-buttons-bs4/css/buttons.bootstrap4.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/jquery-datatables-checkboxes/css/dataTables.checkboxes.css">
+</environment>
+<environment
+    exclude="Development">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-bs4/css/dataTables.bootstrap4.min.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-responsive-bs4/css/responsive.bootstrap4.min.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/datatables.net-buttons-bs4/css/buttons.bootstrap4.min.css">
+    <link
+        rel="stylesheet"
+        href="~/lib/jquery-datatables-checkboxes/css/dataTables.checkboxes.min.css">
+</environment>
+<style>
+    td.details-control {
+        background: url('../images/datatables.net/details_open.png') no-repeat center center;
+        min-width: 32px;
+        cursor: pointer;
+    }
+
+    tr.shown td.details-control {
+        background: url('../images/datatables.net/details_close.png') no-repeat center center;
+        min-width: 32px;
+        cursor: pointer;
+    }
+
+    .d-flex .bd-highlight {
+        padding-bottom: 5px;
+    }
+
+    table.dataTable, .dataTables_wrapper {
+        font-size: 13px;
+    }
+
+    .dataTables_info, .pagination > .paginate_button {
+        font-size: 11.5px;
+    }
+
+    .table > tbody > tr > td {
+        padding: 0.25rem;
+        vertical-align: middle;
+    }
+
+    .table thead th {
+        vertical-align: middle;
+    }
+
+    button.acciones > i.fas, btn acciones > i.fa {
+        font-size: 12.5px;
+    }
+
+    a.acciones {
+        width: 29px;
+        height: 29px;
+        padding: 0.10rem 0.10rem !important;
+    }
+
+    button.acciones {
+        width: 29px;
+        height: 29px;
+        padding: 0.10rem 0.10rem !important;
+    }
+
+    a.acciones > i.fas, btn acciones > i.fa {
+        font-size: 12.5px;
+    }
+
+    tr.thead-filter > th > input, tr.thead-filter > th > select {
+        height: 22.5px !important;
+    }
+
+    a.acciones-dropdown {
+        height: 29px;
+        padding: 0.10rem 0.10rem !important;
+    }
+
+    a.acciones-dropdown > i.fas, btn acciones-dropdown > i.fa {
+        font-size: 12.5px;
+    }
+
+    .table-sm td {
+        padding: 0.1rem !important;
+        vertical-align: middle;
+    }
+
+    .detail-title {
+        font-size: 0.875rem;
+    }
+
+    .dataTables_filter {
+        padding-top: 5.5px;
+    }
+
+    .dataTables_filter > label {
+        margin-bottom: 5px;
+        width: 100%;
+    }
+
+    table.dataTable, .dataTables_wrapper {
+        margin-top: 0 !important;
+    }
+
+    table thead tr.thead-filter > th, table thead tr.thead-filter > td {
+        padding: 0 !important;
+    }
+
+    .table-details {
+        font-size: 0.75rem;
+    }
+
+    /*Resumen Asignacion*/
+    .tbody-resumen > tr > td {
+        font-size: 0.75rem;
+    }
+
+    .tbody-resumen > tr > td > input {
+        font-size: 0.775rem !important;
+    }
+
+    /*Responsive*/
+    .scrolledTable {
+        overflow-y: auto;
+        clear: both;
+    }
+</style>
+
+<script>
+    let dataTableLangPath = '@Url.Content($"~/lib/datatables.net/i18n/spanish.json")';
+</script>
+
+<environment
+    include="Development">
+    <script
+        src="~/lib/jszip/jszip.js"></script>
+    <script
+        src="~/lib/pdfmake/build/pdfmake.min.js"></script>
+    <script
+        src="~/lib/pdfmake/build/vfs_fonts.min.js"></script>
+    <script
+        src="~/lib/datatables.net/js/jquery.dataTables.js"></script>
+    <script
+        src="~/lib/datatables.net-responsive/js/dataTables.responsive.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/dataTables.buttons.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.flash.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.html5.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.print.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.colVis.js"></script>
+    <script
+        src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.js"></script>
+    <script
+        src="~/lib/jquery-datatables-checkboxes/js/dataTables.checkboxes.js"></script>
+    <script
+        src="~/lib/datatables.net-responsive-bs4/js/responsive.bootstrap4.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons-bs4/js/buttons.bootstrap4.js"></script>
+    <script
+        src="~/lib/datatables.net-plugins/filtering/type-based/accent-neutralise.js"></script>
+    <script
+        src="~/lib/datatables.net-plugins/sorting/date-euro.js"></script>
+</environment>
+<environment
+    exclude="Development">
+    <script
+        src="~/lib/jszip/jszip.min.js"></script>
+    <script
+        src="~/lib/pdfmake/build/pdfmake.min.js"></script>
+    <script
+        src="~/lib/pdfmake/build/vfs_fonts.min.js"></script>
+    <script
+        src="~/lib/datatables.net/js/jquery.dataTables.min.js"></script>
+    <script
+        src="~/lib/datatables.net-responsive/js/dataTables.responsive.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/dataTables.buttons.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.flash.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.html5.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.print.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons/js/buttons.colVis.min.js"></script>
+    <script
+        src="~/lib/datatables.net-bs4/js/dataTables.bootstrap4.min.js"></script>
+    <script
+        src="~/lib/jquery-datatables-checkboxes/js/dataTables.checkboxes.min.js"></script>
+    <script
+        src="~/lib/datatables.net-responsive-bs4/js/responsive.bootstrap4.min.js"></script>
+    <script
+        src="~/lib/datatables.net-buttons-bs4/js/buttons.bootstrap4.min.js"></script>
+    <script
+        src="~/lib/datatables.net-plugins/filtering/type-based/accent-neutralise.js"></script>
+    <script
+        src="~/lib/datatables.net-plugins/sorting/date-euro.js"></script>
+</environment>
+<script>
+    function configDatatable(config) {
+        var sumColumns = [];
+        var prefixColumns = [];
+
+        $.each(config.columns, function (index, item) {
+            if (item.operation === "sum") {
+                sumColumns.push(index);
+                if (typeof item.prefix === 'undefined')
+                    //prefixColumns.push("$");
+                    prefixColumns.push("");
+                else if (item.prefix === "none")
+                    prefixColumns.push("");
+                else
+                    prefixColumns.push(item.prefix);
+            }
+        });
+
+        if (typeof config.columnFilter !== 'undefined')
+            if (config.columnFilter) {
+                if (config.filtrosCabecera === undefined || config.filtrosCabecera === true) {
+                    $(`#${config.id} thead tr`).clone(true).addClass("thead-filter").appendTo(`#${config.id} thead`);
+                    $(`#${config.id} thead tr:eq(1) th`).each(function (i) {
+                        $(this).removeClass("sorting");
+                        $(this).removeClass("sorting_asc");
+                        var typeFilter = config.columns[i].filter;
+                        if (typeof config.columns[i].filter === 'undefined')
+                            typeFilter = "input";
+
+                        if (typeFilter === "select")
+                            $(this).html('<select class="form-control form-control-sm p-0 m-0 w-100 select-filter"><option value="">Todos</option></select>');
+                        else if (typeFilter === "none")
+                            $(this).html('<span><span />');
+                        else if (typeFilter === "input")
+                            $(this).html('<input type="text" class="form-control form-control-sm p-0 m-0 w-100 input-filter" />');
+
+                        $('input', this).on('keyup change', function (e) {
+                            if (t.column(i).search() !== this.value)
+                                t.column(i).search(this.value).draw();
+                        });
+
+                        $('select', this).on('change', function (e) {
+                            if (t.column(i).search() !== this.value)
+                                t.column(i).search(this.value).draw();
+                        });
+                    });
+                }
+            }
+
+        let t = $(`#${config.id}`).DataTable({
+            language: {
+                url: dataTableLangPath
+            },
+            dom: typeof config.dom !== 'undefined' ? config.dom : 'lfrtip',
+            buttons: typeof config.buttons !== 'undefined' ? config.buttons : [],
+            ajax: typeof config.ajax !== 'undefined' ? config.ajax : null,
+            data: typeof config.data !== 'undefined' ? config.data : null,
+            columns: typeof config.columns !== 'undefined' ? config.columns : null,
+            //lengthMenu: typeof config.lengthMenu !== 'undefined' ? config.lengthMenu : [[20, 50, 100, -1],[20, 50, 100, "Todos"]],
+            lengthMenu: typeof config.lengthMenu !== 'undefined' ? config.lengthMenu : [[10, 50, 100], [10, 50, 100]],
+            pageLength: typeof config.pageLength !== 'undefined' ? config.pageLength : 20,
+            ordering: typeof config.ordering !== 'undefined' ? config.ordering : true,
+            order: typeof config.order !== 'undefined' ? config.order : [],
+            paging: typeof config.paging !== 'undefined' ? config.paging : true,
+            info: typeof config.info !== 'undefined' ? config.info : true,
+            responsive: typeof config.responsive !== 'undefined' ? config.responsive : false,
+            createdRow: typeof config.createdRow !== 'undefined' ? config.createdRow : null,
+            orderCellsTop: typeof config.orderCellsTop !== 'undefined' ? config.orderCellsTop : false,
+            fixedHeader: typeof config.fixedHeader !== 'undefined' ? config.fixedHeader : false,
+            filter: typeof config.filter !== 'undefined' ? config.filter : true,
+            serverSide: typeof config.serverSide !== 'undefined' ? config.serverSide : false,
+            processing: typeof config.processing !== 'undefined' ? config.processing : false,
+            initComplete: function (settings, json) {
+                $(".helpCont").parent().remove();
+                $(`#${config.id}_wrapper`).append("<div class='row' id='" + config.id + "_rowInfo'></div>");
+                var gridSize = 6;
+                if (typeof config.gridSizeFooter !== 'undefined')
+                    gridSize = config.gridSizeFooter;
+                $(`#${config.id}_info`).addClass(`col-lg-${gridSize} col-md-${gridSize} col-sm-12 text-left`);
+                $(`#${config.id}_paginate`).addClass(`col-lg-${gridSize} col-md-${gridSize} col-sm-12 text-right`);
+                $(`#${config.id}_rowInfo`).append($(`#${config.id}_info`));
+                $(`#${config.id}_rowInfo`).append($(`#${config.id}_paginate`));
+
+                var input = $(`#${config.id}_filter`).find("input");
+                input.addClass("m-0");
+                input.prop("placeholder", "Buscar...");
+                $(`#${config.id}_filter`).append(`<div class='row'><div class='col table-filter-${config.id} pb-1'></div></div>`);
+
+                var group = `<div class="divGroup input-group"><div class="input-group-prepend">` +
+                    `<span class="input-group-text"><i class="fas fa-search"></i></span></div>`;
+
+                if (config.barraBusqueda !== undefined || config.barraBusqueda === true) {
+                    $(`.table-filter-tableMain`).append(group);
+                    $(`.divGroup`).append(input);
+                    $(`.divGroup`).append(`</div>`);
+                }
+                $(`#${config.id}_filter`).find("label").remove();
+
+                if (typeof config.details !== 'undefined')
+                    if (config.details) {
+                        $('.dataTable tbody').on('click', 'td.details-control', function () {
+                            var tr = $(this).closest('tr');
+                            var row = t.row(tr);
+
+                            if (row.child.isShown()) {
+                                row.child.hide();
+                                tr.removeClass('shown');
+                            } else {
+                                row.child(formatRow(row.data())).show();
+                                tr.addClass('shown');
+                            }
+                        });
+                    }
+
+                if (config.checkboxes) {
+                    $('body').on("change", `#${config.id} tbody input[type=checkbox]`, function () {
+                        if (this.checked)
+                            $(this).closest("tr").addClass("table-primary");
+                        else
+                            $(this).closest("tr").removeClass("table-primary");
+                    });
+
+                    $('body').on("change", `#${config.id} thead input[type=checkbox]`, function () {
+                        if (this.checked)
+                            $($(`#${config.id}`).dataTable().fnGetNodes()).find("input.dt-checkboxes:checked").closest('tr').addClass("table-primary");
+                        else
+                            $($(`#${config.id}`).dataTable().fnGetNodes()).removeClass("table-primary");
+                    });
+                }
+
+                $('.export-excel').on("click", function () {
+                    var e = $(this).data("action");
+                    t.button(e).trigger();
+                });
+
+                if (typeof config.initComplete !== 'undefined') {
+                    if (config.columnFilter)
+                        fillSelectFilter(config, t);
+                    config.initComplete();
+                    t.columns.adjust();
+                }
+            },
+            drawCallback: typeof config.drawCallback !== 'undefined' ? config.drawCallback : null,
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+                totalizar(api, sumColumns, prefixColumns);
+
+                if (typeof config.footerCallback !== 'undefined')
+                    config.footerCallback();
+            }
+        });
+
+        $('a.tool-action').on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        var id = `${config.id}`;
+        $('a.tool-action_' + id).on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        $('a.tool-action-pdf').on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        var idPdf = `${config.id}`;
+        $('a.tool-action-pdf_' + idPdf).on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        @*$.fn.dataTable.ext.errMode = function (settings, tn, msg) {
+            if (settings && settings.jqXHR && (settings.jqXHR.status == 401 || settings.jqXHR.status == 403)) {
+                location.href = "@Url.Action("Login", "Account", new { Area  = "Identity"})";
+            } else {
+                console.log(msg);
+                $.post("@Url.Action("IsAutenticated", "Account", new { Area = "Identity" })", function (data) {
+                    if (!data) {
+                        Swal("¡Acceso Denegado!", "No tiene acceso a este recurso o la sesión actual ha terminado.", "/images/menu/error.png").then((value) => {
+                            location.href = "@Url.Action("Login", "Account", new { Area  = "Identity"})";
+                        });
+                    }
+                });
+            }
+        };*@
+
+        //t.on('buttons-processing', function (e, indicator) {
+        //    if (!indicator)
+        //        swal.close();
+        //});
+        return t;
+    }
+
+    function onlyUnique(value, index, self) {
+        return self.indexOf(value) === index;
+    }
+
+    function fillSelectFilter(config, t) {
+        var selects = [];
+        $.each(config.columns, function (index, item) {
+            if (item.filter === "select")
+                selects.push(index);
+        });
+
+        var i = 0;
+        t.columns(selects).every(function (index, item) {
+            var column = this;
+            var options = column.nodes().to$().toArray().map(x => {
+                return $(x).text()
+            }).filter(onlyUnique);
+            var select = $(column.header()).parent().parent().find("tr:eq(1) th > .select-filter")[i];
+            $(select).empty().append('<option value="">Todos</option>');
+            $.each(options, function (d, j) {
+                if (j !== "")
+                    $(select).append('<option value="' + j + '">' + j + '</option>');
+            });
+            i++;
+        });
+    }
+
+    function configTableSimple(idTabla, barraBusqueda = false, filtrosCabecera = true, indexOrdenamiento = 0) {
+        if (filtrosCabecera) {
+            $(`#${idTabla} thead tr`).clone(true).addClass("thead-filter").appendTo(`#${idTabla} thead`);
+            $(`#${idTabla} thead tr:eq(1) th`).each(function (i) {
+                $(this).removeClass("sorting");
+                $(this).removeClass("sorting_asc");
+                //var typeFilter = config.columns[i].filter;
+                //if (typeof config.columns[i].filter === 'undefined')
+                typeFilter = "input";
+
+                if (typeFilter === "select")
+                    $(this).html('<select class="form-control form-control-sm p-0 m-0 w-100 select-filter"><option value="">Todos</option></select>');
+                else if (typeFilter === "none")
+                    $(this).html('<span><span />');
+                else if (typeFilter === "input")
+                    $(this).html('<input type="text" class="form-control form-control-sm p-0 m-0 w-100 input-filter" />');
+
+                $('input', this).on('keyup change', function (e) {
+                    if (t.column(i).search() !== this.value)
+                        t.column(i).search(this.value).draw();
+                });
+
+                $('select', this).on('change', function (e) {
+                    if (t.column(i).search() !== this.value)
+                        t.column(i).search(this.value).draw();
+                });
+            });
+        }
+
+        var t = $(`#${idTabla}`).DataTable({
+            dom: "lfrtip",
+            processing: false,
+            pageLength: 20,
+            orderCellsTop: true,
+            fixedHeader: true,
+            order: indexOrdenamiento == 0 ? [] : [[indexOrdenamiento, 'desc']],
+            language: {
+                url: dataTableLangPath
+            },
+            lengthChange: false,
+            initComplete: function (e) {
+                $(".helpCont").parent().remove();
+                $(`#${idTabla}_wrapper`).append("<div class='row' id='" + idTabla + "_rowInfo'></div>");
+                var gridSize = 6;
+
+                $(`#${idTabla}_info`).addClass(`col-lg-${gridSize} col-md-${gridSize} col-sm-12 text-left`);
+                $(`#${idTabla}_paginate`).addClass(`col-lg-${gridSize} col-md-${gridSize} col-sm-12 text-right`);
+                $(`#${idTabla}_rowInfo`).append($(`#${idTabla}_info`));
+                $(`#${idTabla}_rowInfo`).append($(`#${idTabla}_paginate`));
+                var input = $(`#${idTabla}_filter`).find("input");
+                input.addClass("m-0");
+                input.prop("placeholder", "Buscar...");
+                $(`#${idTabla}_filter`).append(`<div class='row'><div class='col table-filter-${idTabla} pb-1'></div></div>`);
+
+                var group = `<div id="divGroup" class="input-group"><div class="input-group-prepend">` +
+                    `<span class="input-group-text"><i class="fas fa-search"></i></span></div>`;
+
+                if (barraBusqueda) {
+                    $(`.table-filter-${idTabla}`).append(group);
+                    $(`#divGroup`).append(input);
+                    $(`#divGroup`).append(`</div>`);
+                }
+
+                $(`#${idTabla}_filter`).find("label").remove();
+            },
+        });
+        return t;
+    }
+    
+    function ConfigTablaSinAjax(config, fila = 1) {
+        var sumColumns = [];
+        var prefixColumns = [];
+        $.each(config.columns, function (index, item) {
+            if (item.operation === "sum") {
+                sumColumns.push(index);
+                if (typeof item.prefix === 'undefined')
+                    //prefixColumns.push("$");
+                    prefixColumns.push("");
+                else if (item.prefix === "none")
+                    prefixColumns.push("");
+                else
+                    prefixColumns.push(item.prefix);
+            }
+        });
+        orderDefault = config.order.length === 0 ? [] : config.order;
+        var trfind = $('<tr/>');
+        for (var i = 0; i < config.columns.length; i++) {
+            trfind.append('<th></th>');
+        }
+        //$(`#${config.id} thead tr`).clone(true)
+        trfind.addClass("thead-filter").appendTo(`#${config.id} thead`);
+        $(`#${config.id} thead tr:eq(${fila}) th`).each(function (i) {
+            var typeFilter = config.columns[i].filter;
+            if (typeFilter === "select")
+                $(this).html('<select class="form-control form-control-xs p-0 m-0 w-100 select-filter"><option value="">Todos</option></select>');
+            else if (typeFilter === "none")
+                $(this).html('<span><span/>');
+            else if (typeFilter === "input")
+                $(this).html('<input type="text" class="form-control form-control-xs p-0 m-0 w-100 input-filter"/>');
+
+            $(".input-filter").parent().removeClass("sorting");
+            $(".input-filter").parent().removeClass("sorting_asc");
+            $('input', this).on('keyup change', function (e) {
+                if (t.column(i).search() !== this.value)
+                    t.column(i).search(this.value).draw();
+
+                totalizar(t, sumColumns, prefixColumns);
+            });
+
+            $('select', this).on('change', function (e) {
+                if (t.column(i).search() !== this.value)
+                    t.column(i).search(this.value, true, false, false).draw();
+            });
+        });
+
+        var e = $(`#${config.id}`);
+        var t = e.DataTable({
+            language: {
+                url: dataTableLangPath
+            },
+            dom: typeof config.dom !== 'undefined' ? config.dom : 'lfrtip',
+            buttons: typeof config.buttons !== 'undefined' ? config.buttons : [],
+            data: typeof config.data !== 'undefined' ? config.data : null,
+            columns: typeof config.columns !== 'undefined' ? config.columns : null,
+            lengthMenu: typeof config.length_menu !== 'undefined' ? config.length_menu : [25, 50, 100],
+            paging: typeof config.paging !== 'undefined' ? config.paging : null,
+            rowGroup: typeof config.rowGroup !== 'undefined' ? config.rowGroup : null,
+            info: typeof config.info !== 'undefined' ? config.info : null,
+            ordering: typeof config.ordering !== 'undefined' ? config.ordering : true,
+            order: typeof config.order !== 'undefined' ? config.order : [],
+            paging: typeof config.paging !== 'undefined' ? config.paging : true,
+            info: typeof config.info !== 'undefined' ? config.info : true,
+            responsive: typeof config.responsive !== 'undefined' ? config.responsive : false,
+            createdRow: typeof config.createdRow !== 'undefined' ? config.createdRow : null,
+            serverSide: typeof config.serverSide !== 'undefined' ? config.serverSide : false,
+            fixedColumns: typeof config.fixedColumns !== 'undefined' ? config.fixedColumns : false,
+            orderCellsTop: typeof config.orderCellsTop !== 'undefined' ? config.orderCellsTop : false,
+            select: {
+                style: !config.checkboxes || typeof config.checkboxes !== 'undefined' ? null : 'multi'
+            },
+            orderCellsTop: true,
+            fixedHeader: true,
+            initComplete: function (settings, json) {
+                $(".helpCont").parent().remove();
+                var id = `${config.id}`;
+                $(`#${config.id}_wrapper`).append("<div class='row' id='" + id + "_rowInfo'></div>");
+                $(`#${config.id}_info`).addClass("col-6 col-md-6 col-lg-6 col-xl-6 col-sm-12 text-left");
+                $(`#${config.id}_paginate`).addClass("col-6 col-md-6 col-lg-6 col-xl-6 col-sm-12 text-right");
+                $(`#${config.id}_length`).find("select").removeClass("custom-select");
+                $(`#${config.id}_length`).find("select").removeClass("custom-select-sm");
+                $(`#${config.id}_length`).find("select").css("height", "27.5px");
+                $(`#${config.id}_length`).find("select").css("padding-top", "5px");
+
+                $(`#${config.id}_rowInfo`).append($(`#${config.id}_info`));
+                $(`#${config.id}_rowInfo`).append($(`#${config.id}_paginate`));
+
+                $(".btn-clear-filters").on("click", function () {
+                    $(".thead-filter").find("select, input").each(function () {
+                        if ($(this).is('select'))
+                            $(this).prop("selectedIndex", 0).change();
+                        else if ($(this).is('input'))
+                            $(this).val("");
+                    });
+                    t.search('').columns().search('').draw();
+                    //if (orderDefault.length === 0)
+                    //    t.order.neutral().draw();
+                    //else
+                    //    t.order(orderDefault).draw();
+                    t.order.neutral().draw();
+                });
+
+                t.columns().iterator('column', function (ctx, idx) {
+                    if (config.checkboxes) {
+                        if (idx != 0)
+                            $(t.column(idx).header()).append('<span class="sort-icon"/>');
+                    } else
+                        $(t.column(idx).header()).append('<span class="sort-icon"/>');
+                });
+
+                if (config.checkboxes) {
+                    $('body').on("change", `#${config.id} tbody input[type=checkbox]`, function () {
+                        if (this.checked)
+                            $(this).closest("tr").addClass("table-primary");
+                        else
+                            $(this).closest("tr").removeClass("table-primary");
+                    });
+
+                    $('body').on("change", `#${config.id} thead input[type=checkbox]`, function () {
+                        var rows = t.column(0).nodes().to$();
+                        $.each(rows, function (index, item) {
+                            if ($(item).find("input:checkbox")[0].checked)
+                                $(this).closest("tr").addClass("table-primary");
+                            else
+                                $(this).closest("tr").removeClass("table-primary");
+                        });
+                    });
+                }
+
+                if (typeof config.initComplete !== 'undefined')
+                    config.initComplete();
+            },
+            drawCallback: typeof config.drawCallback !== 'undefined' ? config.drawCallback : null,
+            footerCallback: function (row, data, start, end, display) {
+                var api = this.api(),
+                    data;
+                totalizar(api, sumColumns, prefixColumns);
+
+                if (typeof config.footerCallback !== 'undefined')
+                    config.footerCallback();
+            }
+        });
+
+        $('a.tool-action').on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+
+        var id = `${config.id}`;
+        $('a.tool-action_' + id).on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        $('a.tool-action-pdf').on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+
+        var idPdf = `${config.id}`;
+        $('a.tool-action-pdf_' + idPdf).on("click", function () {
+            var e = $(this).data("action");
+            t.button(e).trigger();
+        });
+        
+        $.fn.dataTable.ext.errMode = function (settings, tn, msg) {
+            if (settings && settings.jqXHR && (settings.jqXHR.status == 401 || settings.jqXHR.status == 403)) {
+                location.reload(true);
+            } else
+                console.log(msg);
+        };
+        return t;
+    }
+
+    function totalizar(api, columns, prefixColumns) {
+        var intVal = function (i) {
+            return typeof i === 'string' ?
+                i.replace(/[\$,]/g, '') * 1 :
+                typeof i === 'number' ?
+                    i : 0;
+        };
+        var i = 0;
+        api.columns(columns, {filter: 'applied'}).every(function () {//TODO: CAMBIAR A CLASS PARA OBTENER COLUMNAS
+            var sum = this
+                .data()
+                .reduce(function (a, b) {
+                    return intVal(a) + intVal(b);
+                }, 0);
+
+            this.footer().innerHTML = prefixColumns[i] + parseNumStr(sum, 2);
+            i++;
+        });
+    }
+</script>
+
+
+<input
+    type="hidden"
+    id="abcdef"/>

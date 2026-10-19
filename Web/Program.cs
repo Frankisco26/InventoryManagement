@@ -1,76 +1,54 @@
-﻿using InventoryManagement.Data;
+﻿using InventoryManagement.Data.Base;
 using InventoryManagement.Data.Services;
+using InventoryManagement.Models.Identidad;
+using InventoryManagement.Models.Utilitarios;
+using InventoryManagement.Web.Authorizations;
 using InventoryManagement.Web.Services;
 using Microsoft.AspNetCore.Authentication.JwtBearer;
-using Microsoft.AspNetCore.Components.Authorization;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Localization;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
+using System.Globalization;
 using System.Text;
-using Web.Components;
-using Web.Components.Account;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // =====================================
-// Add services
+// Cultura (separador decimal "." para precios)
 // =====================================
 
-builder.Services.AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services.AddControllers();
-
-builder.Services.AddAuthorization();
-
-// =====================================
-// Authentication
-// =====================================
-
-builder.Services.AddCascadingAuthenticationState();
-
-builder.Services.AddScoped<IdentityUserAccessor>();
-builder.Services.AddScoped<IdentityRedirectManager>();
-
-builder.Services.AddScoped<
-    AuthenticationStateProvider,
-    IdentityRevalidatingAuthenticationStateProvider>();
-
-var jwtSettings = builder.Configuration.GetSection("Jwt");
-
-var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
-
-builder.Services
-    .AddAuthentication()
-    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
+var cultura = new CultureInfo("es-EC")
+{
+    NumberFormat =
     {
-        options.TokenValidationParameters =
-            new TokenValidationParameters
-            {
-                ValidateIssuer = true,
-                ValidateAudience = true,
-                ValidateLifetime = true,
-                ValidateIssuerSigningKey = true,
-
-                ValidIssuer = jwtSettings["Issuer"],
-                ValidAudience = jwtSettings["Audience"],
-
-                IssuerSigningKey =
-                    new SymmetricSecurityKey(key)
-            };
-    });
+        CurrencyDecimalSeparator = ".",
+        NumberDecimalSeparator = ".",
+        PercentDecimalSeparator = ".",
+        CurrencyGroupSeparator = ",",
+        NumberGroupSeparator = ",",
+        PercentGroupSeparator = ","
+    }
+};
+CultureInfo.DefaultThreadCurrentCulture = cultura;
+CultureInfo.DefaultThreadCurrentUICulture = cultura;
 
 // =====================================
-// Database
+// Base de datos (ContextoIdentidad y ContextoPrincipal)
 // =====================================
 
-var connectionString = builder.Configuration
-    .GetConnectionString("DefaultConnection")
-    ?? throw new InvalidOperationException(
-        "Connection string 'DefaultConnection' not found.");
+void ConfigurarSqlServer(DbContextOptionsBuilder options, string nombreConexion)
+{
+    var connectionString = builder.Configuration.GetConnectionString(nombreConexion)
+        ?? throw new InvalidOperationException($"Connection string '{nombreConexion}' not found.");
 
-builder.Services.AddDbContext<ApplicationDbContext>(options =>
-    options.UseSqlServer(connectionString));
+    options.UseSqlServer(connectionString,
+        x => x.MigrationsHistoryTable("__EFMigrationsHistory", Entornos.Migracion));
+}
+
+builder.Services.AddDbContext<ContextoIdentidad>(m => ConfigurarSqlServer(m, nameof(ContextoIdentidad)));
+builder.Services.AddDbContext<ContextoPrincipal>(m => ConfigurarSqlServer(m, nameof(ContextoPrincipal)));
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
@@ -79,61 +57,113 @@ builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 // =====================================
 
 builder.Services
-    .AddIdentity<ApplicationUser, IdentityRole>(options =>
+    .AddIdentity<Usuario, Rol>(options =>
     {
+        // Password settings.
+        options.Password.RequireDigit = false;
+        options.Password.RequireLowercase = false;
+        options.Password.RequireNonAlphanumeric = false;
+        options.Password.RequireUppercase = false;
+        options.Password.RequiredLength = 3;
+        options.Password.RequiredUniqueChars = 1;
+
+        // Lockout settings.
+        options.Lockout.DefaultLockoutTimeSpan = TimeSpan.FromHours(6);
+        options.Lockout.MaxFailedAccessAttempts = 3;
+        options.Lockout.AllowedForNewUsers = false;
+
+        // User settings.
+        options.User.AllowedUserNameCharacters = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-._@+";
+        options.User.RequireUniqueEmail = false;
+
         options.SignIn.RequireConfirmedAccount = false;
     })
-    .AddRoles<IdentityRole>()
-    .AddEntityFrameworkStores<ApplicationDbContext>()
+    .AddEntityFrameworkStores<ContextoIdentidad>()
     .AddDefaultTokenProviders();
 
 builder.Services.ConfigureApplicationCookie(options =>
 {
-    options.LoginPath = "/Account/Login";
-    options.AccessDeniedPath = "/Account/AccessDenied";
+    options.Cookie.HttpOnly = true;
+    options.ExpireTimeSpan = TimeSpan.FromHours(6);
+    options.SlidingExpiration = true;
+    options.LoginPath = "/Identity/Account/Login";
+    options.LogoutPath = "/Identity/Account/Logout";
+    options.AccessDeniedPath = "/Identity/Account/AccessDenied";
+    options.Cookie.IsEssential = true;
 });
 
 // =====================================
-// Email
+// JWT Bearer para la API REST
 // =====================================
 
-builder.Services.AddSingleton<
-    IEmailSender<ApplicationUser>,
-    IdentityNoOpEmailSender>();
+var jwtSettings = builder.Configuration.GetSection("Jwt");
+var key = Encoding.UTF8.GetBytes(jwtSettings["Key"]!);
 
-// =====================================
-// HttpClient
-// =====================================
-
-builder.Services.AddHttpClient<ApiClient>(client =>
-{
-    client.BaseAddress = new Uri("https://localhost:7001");
-});
-
-// =====================================
-// Services
-// =====================================
-
-builder.Services.AddScoped(sp =>
-{
-    var client = new HttpClient
+builder.Services
+    .AddAuthentication()
+    .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, options =>
     {
-        BaseAddress = new Uri("https://localhost:7001/")
-    };
+        options.TokenValidationParameters = new TokenValidationParameters
+        {
+            ValidateIssuer = true,
+            ValidateAudience = true,
+            ValidateLifetime = true,
+            ValidateIssuerSigningKey = true,
+            ValidIssuer = jwtSettings["Issuer"],
+            ValidAudience = jwtSettings["Audience"],
+            IssuerSigningKey = new SymmetricSecurityKey(key)
+        };
+    });
 
-    return client;
+// =====================================
+// Autorización por módulo (pantallas asignadas al rol en la empresa de la sesión)
+// =====================================
+
+builder.Services.AddAuthorization(options =>
+{
+    options.AddPolicy(nameof(Areas.Configuracion), policy => policy.AddRequirements(new ModuloAuthorizationRequirement(Areas.Configuracion)));
+    options.AddPolicy(nameof(Areas.Stock), policy => policy.AddRequirements(new ModuloAuthorizationRequirement(Areas.Stock)));
 });
-builder.Services.AddScoped<ApiClient>();
-builder.Services.AddScoped<AuthService>();
+builder.Services.AddScoped<IAuthorizationHandler, ModuloAuthorizationHandler>();
+builder.Services.AddHttpContextAccessor();
+
+// =====================================
+// MVC, Razor Pages y sesión
+// =====================================
+
+builder.Services.AddControllersWithViews();
+builder.Services.AddRazorPages();
+
+builder.Services.AddSession(options =>
+{
+    options.IdleTimeout = TimeSpan.FromHours(8);
+    options.IOTimeout = TimeSpan.FromHours(8);
+    options.Cookie.IsEssential = true;
+});
+
+// =====================================
+// Servicios
+// =====================================
+
+builder.Services.AddScoped<EmpresasUsuario>();
 builder.Services.AddScoped<JwtService>();
 builder.Services.AddScoped<IProductService, ProductService>();
 builder.Services.AddScoped<IStockMovementService, StockMovementService>();
 
 var app = builder.Build();
 
+Microsoft.AspNetCore.Identity.Extensions.SetHttpContextAccessor(app.Services.GetRequiredService<IHttpContextAccessor>());
+
 // =====================================
 // Pipeline
 // =====================================
+
+app.UseRequestLocalization(new RequestLocalizationOptions
+{
+    DefaultRequestCulture = new RequestCulture(cultura),
+    SupportedCultures = new[] { cultura },
+    SupportedUICultures = new[] { cultura }
+});
 
 if (app.Environment.IsDevelopment())
 {
@@ -141,36 +171,25 @@ if (app.Environment.IsDevelopment())
 }
 else
 {
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
+    app.UseExceptionHandler("/Principal/Error");
     app.UseHsts();
 }
 
 app.UseHttpsRedirection();
-
 app.UseStaticFiles();
 
+app.UseRouting();
+app.UseSession();
+
 app.UseAuthentication();
-
 app.UseAuthorization();
-
-app.UseAntiforgery();
 
 // =====================================
 // Endpoints
 // =====================================
 
-app.MapControllers();
-
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
-
-app.MapAdditionalIdentityEndpoints();
-
-using (var scope = app.Services.CreateScope())
-{
-    var services = scope.ServiceProvider;
-
-    await DbSeeder.SeedAsync(services);
-}
+app.MapControllerRoute("areas", "{area:exists}/{controller=Principal}/{action=Inicio}/{id?}");
+app.MapControllerRoute("default", "{controller=Principal}/{action=Inicio}/{id?}");
+app.MapRazorPages();
 
 app.Run();

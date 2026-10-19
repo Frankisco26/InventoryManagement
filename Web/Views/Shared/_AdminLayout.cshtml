@@ -1,0 +1,41 @@
+@{
+    Layout = "~/Views/Shared/_Layout.cshtml";
+    var empresa = Context.Session.GetObjectFromJson<InventoryManagement.Web.Models.Session.EmpresaViewModel>("Empresa");
+}
+
+@section Header {
+    @RenderSection("Header", required: false)
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/sb-admin.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/sidebar.css" asp-append-version="true" />
+
+    @RenderSection("Styles", required: false)
+}
+
+@section Body {
+    <header>
+        <partial name="_NavbarPartial" />
+    </header>
+    @RenderSection("Body", required: false)
+    <partial name="_LoadingPartial" />
+}
+
+<partial name="_SidebarPartial" />
+<div class="wrapper">
+    <main id="content" role="main" class="container-fluid p-3">
+        @if (empresa != null)
+        {
+            @RenderBody()
+        }
+    </main>
+</div>
+
+@section Scripts {
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery.blockUI/2.70/jquery.blockUI.min.js"
+            integrity="sha256-9wRM03dUw6ABCs+AU69WbK33oktrlXamEXMvxUaF+KU="
+            crossorigin="anonymous"></script>
+
+    @RenderSection("Scripts", required: false)
+}

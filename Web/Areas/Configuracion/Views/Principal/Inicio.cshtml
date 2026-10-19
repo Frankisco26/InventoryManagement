@@ -1,0 +1,96 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Panel inicial";
+}
+
+<section>
+    <div class="portlet light">
+        <div class="portlet-title">
+            <div class="actions btn-group">
+                <b><i class="fas fa-chart-line mr-2"></i>@ViewData["Title"] - @ViewBag.NombreEmpresa</b>
+            </div>
+        </div>
+        <div class="portlet-body">
+            <div class="row">
+                <div class="col-sm-12 col-md-6 col-xl-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small text-uppercase">Productos</div>
+                            <div class="h3 mb-0"><i class="fas fa-box mr-2 text-primary"></i>@Model.TotalProductos</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-xl-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small text-uppercase">Con stock bajo</div>
+                            <div class="h3 mb-0"><i class="fas fa-triangle-exclamation mr-2 text-danger"></i>@Model.ProductosStockBajo</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-xl-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small text-uppercase">Movimientos del mes</div>
+                            <div class="h3 mb-0"><i class="fas fa-right-left mr-2 text-success"></i>@Model.MovimientosMes</div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-sm-12 col-md-6 col-xl-3 mb-3">
+                    <div class="card shadow-sm h-100">
+                        <div class="card-body">
+                            <div class="text-muted small text-uppercase">Valor del inventario</div>
+                            <div class="h3 mb-0"><i class="fas fa-dollar-sign mr-2 text-warning"></i>@Model.ValorInventario.ToString("N2")</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-12">
+                    <h6 class="font-weight-bold pt-2"><i class="fas fa-triangle-exclamation text-danger mr-2"></i>Productos con stock bajo</h6>
+                    @if (Model.StockBajo.Any())
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-striped table-bordered table-sm">
+                                <thead>
+                                    <tr>
+                                        <th>SKU</th>
+                                        <th>Nombre</th>
+                                        <th>Categoría</th>
+                                        <th class="text-right">Stock</th>
+                                        <th class="text-right">Stock mínimo</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var producto in Model.StockBajo)
+                                    {
+                                        <tr class="table-danger">
+                                            <td><b>@producto.SKU</b></td>
+                                            <td>@producto.Name</td>
+                                            <td>@producto.Category</td>
+                                            <td class="text-right">@producto.QuantityInStock</td>
+                                            <td class="text-right">@producto.MinimumStock</td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                    else
+                    {
+                        <p class="text-muted small">No hay productos con stock bajo.</p>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            hideLoader();
+        });
+    </script>
+}

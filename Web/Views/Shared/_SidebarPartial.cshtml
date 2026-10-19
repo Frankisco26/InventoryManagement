@@ -1,0 +1,82 @@
+@using InventoryManagement.Web.Services
+@{
+    var empresa = Context.Session.GetObjectFromJson<InventoryManagement.Web.Models.Session.EmpresaViewModel>("Empresa");
+    var modulos = EmpresasUsuario.NombresModulos;
+    var listaModulos = empresa == null
+        ? new List<string>()
+        : InventoryManagement.Models.Utilitarios.Areas.ObtenerModulos().Where(m => empresa.Modulos.Contains(m.Value)).OrderBy(m => m.Key).Select(m => m.Value).ToList();
+}
+<nav id="sidebar" class="main-menu main-menu-hover">
+    @if (empresa != null)
+    {
+        <ul>
+            <li class="menu-item nav-item dropdown pl-1 pt-3">
+                <a class="" href="@Url.Content("~/Configuracion/Resumen/Inicio")">
+                    <img width="180" src="/images/LetraContagestorSidebar.png" />
+                </a>
+            </li>
+            <li class="pt-2 pl-5 menu-item nav-item dropdown text-center">
+                <a class="nav-link" style="font-size: 12px" href="#" id="navbarDropdownUsuario" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    <b>@empresa.Identificacion</b>
+                    <br><small>@empresa.Nombre</small>
+                </a>
+                <hr />
+            </li>
+            <li class="menu-item nav-item dropdown pb-1">
+                <a class="" href="@Url.Content("~/Configuracion/Resumen/Inicio")">
+                    <i class="fas fa-chart-line"></i>
+                    <span class="nav-text">
+                        Panel inicial
+                    </span>
+                </a>
+            </li>
+            @foreach (var item in listaModulos)
+            {
+                if (empresa.Pantallas.Any(m => m.Modulo == item && m.Activo))
+                {
+                    <li class="menu-item nav-item dropdown pb-1">
+                        <a class="nav-link" href="@($"#{item}Submenu")" data-toggle="collapse" aria-haspopup="true" aria-expanded="false">
+                            <i class="fas fa-@(modulos[item][1])" style="font-size: 0.7em !important;"></i>
+                            <span class="nav-text">
+                                @modulos[item][0]
+                            </span>
+                        </a>
+                        <ul class="sub-menu collapse" id="@($"{item}Submenu")">
+                            @foreach (var pantalla in empresa.Pantallas.Where(m => m.Modulo == item && m.Activo))
+                            {
+                                <li class="dropdown-item">
+                                    <a asp-area="@pantalla.Area" asp-controller="@pantalla.Controlador" asp-action="@(pantalla.Accion ?? "Inicio")">
+                                        <span class="text ml-4">@pantalla.Nombre</span>
+                                    </a>
+                                </li>
+                            }
+                        </ul>
+                    </li>
+                }
+            }
+        </ul>
+    }
+</nav>
+
+@this.ScriptBlock(
+    @<script>
+          $(".main-menu").mouseleave(function () {
+              $(".sub-menu").removeClass("show");
+          });
+
+          $("#main-content").mouseenter(function () {
+              $(".sub-menu").removeClass("show");
+          });
+
+          $('li > a.nav-link').on('click', function (e) {
+              e.preventDefault()
+              var toggle = true;
+              if ($(this).closest(".menu-item.nav-item.dropdown").find(".sub-menu").hasClass("show"))
+                  toggle = false;
+              $(".sub-menu").removeClass("show");
+              if (toggle)
+                  $(this).tab('show')
+              return toggle;
+          })
+    </script>
+    )

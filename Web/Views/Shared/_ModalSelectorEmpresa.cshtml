@@ -1,0 +1,50 @@
+@using InventoryManagement.Web.Services
+@inject EmpresasUsuario EmpresasUsuario
+@{
+    var empresasUsuario = await EmpresasUsuario.GetForUserAsync(User.GetUserId<int>());
+}
+
+<style>
+    .colorLetras {
+        color: white;
+    }
+</style>
+
+<form asp-area="" asp-controller="Principal" asp-action="Inicio" method="get">
+    <div class="container-fluid text-center image animated fadeInDownBig">
+        <div class="row">
+            <div class="col-12 text-center">
+                <div class="login align-items-center" style="height: 20rem; box-shadow: 0px 0px 0px;">
+                    <div class="row">
+                        <div class="col-12">
+                            <div class="text-center">
+                                <img src="/images/logo.png" alt="Logo" width="170" height="140">
+                            </div>
+                        </div>
+                        <div class="col-lg-12 my-auto mx-auto">
+                            <div class="container" style="width:25rem;">
+                                @if (empresasUsuario.Any())
+                                {
+                                    <h5 class="login-heading mt-3 mb-2 text-center colorLetras">Cambio de Empresa</h5>
+                                    <select name="empresa" class="form-control">
+                                        @foreach (var item in empresasUsuario)
+                                        {
+                                            <option value="@item.Key">@item.Value</option>
+                                        }
+                                    </select>
+                                    <button class="mt-3 btn btn-primary btn-sm btn-block btn-login text-uppercase font-weight-bold mb-2" type="submit">Cambiar Empresa</button>
+                                }
+                                else
+                                {
+                                    <h5 class="login-heading mt-3 mb-2 text-center colorLetras">Su usuario no tiene empresas asignadas</h5>
+                                    <p class="colorLetras">Comuníquese con su administrador.</p>
+                                }
+                                <a class="btn btn-sm btn-link text-white" asp-area="Identity" asp-page="/Account/Logout">Salir del sistema</a>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</form>

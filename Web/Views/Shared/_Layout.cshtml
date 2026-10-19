@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <title id="titleLayout">@ViewData["Title"]</title>
+    <link rel="icon" type="image/x-icon" href="~/favicon.ico">
+    <link href="~/images/logo.ico" rel="icon" sizes="32x32" />
+
+    @RenderSection("Header", required: false)
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/css/bootstrap.min.css"
+          integrity="sha256-L/W5Wfqfa0sdBNIKN9cG6QA5F2qx4qICmU2VgLruv9Y="
+          crossorigin="anonymous" />
+    <link rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/3.7.2/animate.min.css"
+          integrity="sha256-PHcOkPmOshsMBC+vtJdVr5Mwb7r0LkSVJPlPrp/IMpU="
+          crossorigin="anonymous" />
+    <link rel="stylesheet" href="~/css/bootstrap.theme.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/css/select2.min.css" integrity="sha512-xrbX64SIXOxo5cMQEDUQ3UyKsCreOEq1Im90z3B7KPoxLJ2ol/tCT0aBhuIzASfmBVdODioUdUPbt5EDEXmD9g==" crossorigin="anonymous" referrerpolicy="no-referrer" />
+
+    @RenderSection("Styles", required: false)
+</head>
+<body>
+    @RenderSection("Body", required: false)
+    <main id="main-content" role="main">
+        @RenderBody()
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.4.1/jquery.min.js"
+            integrity="sha256-CSXorXvZcTkaix6Yvo6HppcZGetbYMGWSFlBw8HfCJo="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/twitter-bootstrap/4.4.1/js/bootstrap.bundle.min.js"
+            integrity="sha256-OUFW7hFO0/r5aEGTQOz9F/aXQOt+TwqI1Z4fbVvww04="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/sweetalert/2.1.2/sweetalert.min.js"
+            integrity="sha256-KsRuvuRtUVvobe66OFtOQfjP8WA2SzYsmm4VPfMnxms="
+            crossorigin="anonymous"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/toastr.js/2.1.3/toastr.min.js"
+            integrity="sha256-yNbKY1y6h2rbVcQtf0b8lq4a+xpktyFc3pSYoGAY1qQ="
+            crossorigin="anonymous"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+
+    <partial name="Components/Datatable" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/select2.full.min.js" integrity="sha512-ZUpSbMNnQu70H7BfByG1XUA1o9mxzacOBl657kmlgK0Yg0Qo+Ymx/WMANRdrom015jZa/DKby6IRRPBVU+Aqlg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.8/js/i18n/es.js" integrity="sha512-W/Pn9WFVomkWFiVa/A9r2xD70A2uj0Q0paqwaIe4hfjPyL48/XJtVQGRlgpcphyM4/mTrog7l/mOYzpV0SwrwA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/js/all.min.js" integrity="sha512-6PM0qYu5KExuNcKt5bURAoT6KCThUmHRewN3zUFNaoI6Di7XJPTMoT6K0nsagZKk2OB4L7E3q1uQKHNHd4stIQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script>
+        var _tooltip = jQuery.fn.tooltip;
+
+        // Los modals solo se cierran con Cancelar o la X: no al hacer clic fuera ni con Escape
+        if (jQuery.fn.modal) {
+            jQuery.fn.modal.Constructor.Default.backdrop = 'static';
+            jQuery.fn.modal.Constructor.Default.keyboard = false;
+        }
+    </script>
+    @RenderSection("Scripts", required: false)
+
+    <!-- Habilitación de los tooltips generales -->
+    <script>
+        jQuery.fn.tooltip = _tooltip;
+        $(document).ready(function () {
+            $('[data-toggle="tooltip"]').tooltip();
+            if (!isMobile())
+                cambioPosicion();
+
+            cambioPosicionAcciones();
+        });
+
+        function cambioPosicion() {
+            var clone = $(".btn-group-devided");
+            $("#botonesAcciones").append(clone);
+        }
+
+        function cambioPosicionAcciones() {
+            var clone = $("#divBtnAcciones");
+            $("#botonesAcciones").append(clone);
+        }
+    </script>
+
+    @this.WriteScriptBlocks()
+
+</body>
+</html>
