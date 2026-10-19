@@ -4,7 +4,7 @@ Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollado
 
 ---
 
-# Tecnologías Utilizadas
+# Technologies Used
 
 - ASP.NET Core 10 (MVC + Razor Pages para Identity)
 - Entity Framework Core 10
@@ -18,9 +18,9 @@ Es un Sistema utilizado para evaluar el conocimiento técnico de un desarrollado
 
 ---
 
-# Arquitectura del Proyecto
+# Project Architecture
 
-El sistema está dividido en múltiples capas para mantener una arquitectura limpia, escalable y mantenible.
+The system is divided into multiple layers to maintain a clean, scalable, and maintainable architecture.
 
 ```text
 InventoryManagement
@@ -53,7 +53,7 @@ InventoryManagement
 
 ---
 
-# Características del Sistema
+# System Features
 
 ## Multiempresa
 
@@ -82,13 +82,13 @@ InventoryManagement
 - Control de stock y stock mínimo
 - Categorías y precios
 
-## Movimientos de Inventario
+## Product Management
 
 - Entradas y salidas de inventario
 - Historial de movimientos por producto
 - Validación de stock insuficiente
 
-## APIs REST
+## REST APIs
 
 - `POST api/auth/token` para obtener el token de una empresa del usuario
 - CRUD Productos y movimientos (`api/products`, `api/products/{id}/movements`)
@@ -96,7 +96,7 @@ InventoryManagement
 
 ---
 
-# Configuración del Proyecto
+# Project Configuration
 
 # Clonar Repositorio
 
@@ -106,7 +106,7 @@ git clone https://github.com/Frankisco26/InventoryManagement.git
 
 ---
 
-# Configuración Base de Datos
+# Database Configuration
 
 Modificar el archivo `Web/appsettings.json` (y `appsettings.Development.json`):
 
@@ -132,7 +132,7 @@ Modificar el archivo `Web/appsettings.json` (y `appsettings.Development.json`):
 
 ---
 
-# Migraciones
+# Migrations
 
 Igual que en Contagestor, se usa el script `migrate.ps1` en la raíz (instala `dotnet-ef` desde `dotnet-tools.json`). El parámetro `-context` es `Identidad` o `Principal` (por defecto `Principal`):
 
@@ -158,12 +158,12 @@ Las migraciones siembran:
 
 ---
 
-# Ejecutar Proyecto
+# Run the Project
 
-## Desde Visual Studio
+## From Visual Studio
 
 ```text
- Dar click derecho sobre el proyecto Web y escoger la opción establecer como proyecto de inicio. Luego presionar F5
+ Right-click on the Web project and select "Set as Startup Project". Then press F5.
 ```
 
 ## Desde CLI
@@ -174,9 +174,9 @@ dotnet run --project Web
 
 ---
 
-# URLs del Sistema
+# System URLs
 
-## Aplicación Web
+## Web Application
 
 ```text
 https://localhost:7001
